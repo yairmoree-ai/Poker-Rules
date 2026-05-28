@@ -1,0 +1,751 @@
+import { useState, useRef } from "react";
+
+const chapters = [
+  {
+    id: "general", title: "עקרונות כלליים", icon: "⚖️", color: "#c8a96e",
+    rules: [
+      { number: 1, title: "החלטות הפלור", summary: "הוגנות ומשחק תקין – עדיפות ראשונה",
+        full: `החלטות הפלור (Floor Decisions) סופיות.\n\nעקרון יסוד: טובת המשחק והוגנות גוברות על כל כלל טכני.\n\nכאשר נסיבות חריגות מתרחשות, לפעמים יש להעדיף היגיון בריא על פני הכלל הטכני.\n\n✅ בפועל: אם קרה משהו לא רגיל ואין כלל ספציפי, ה-TD יפסוק לפי מה שהכי הגון לכולם.`,
+        tip: "💡 תמיד אפשר לקרוא ל-Floor להחלטה – זו הזכות שלך!" },
+      { number: 2, title: "אחריות השחקן", summary: "השחקן אחראי לדאוג לעצמו",
+        full: `השחקן אחראי ל:\n\n• לאמת רישום ומיקום המושב\n• לוודא מספר קלפים נכון לפני SA\n• להגן על ידו\n• לבצע פעולות בתורו עם מינוח ברור\n• לשמור קלפים גלויים וצ'יפים בסדר\n• להישאר בשולחן עם יד חיה\n• לקרוא לפלור אם רואה טעות\n• לשחק בקצב סביר\n• לדעת ולציית לחוקים`,
+        tip: "💡 'לא ידעתי את החוק' לא מהווה סיבה לביטול פסיקה!" },
+      { number: 3, title: "מינוח ומחוות רשמיות", summary: "השתמש במילים ברורות",
+        full: `מונחים רשמיים:\n\n🟢 BET – הימור\n🟢 RAISE – העלאה\n🟢 CALL – להשוות\n🟢 FOLD – לקפל\n🟢 CHECK – לעבור\n🟢 ALL-IN – הכל פנימה\n🟢 COMPLETE – השלמה\n🟢 POT – פוט (פוט-לימיט בלבד)\n\n⚠️ הקשה על השולחן = CHECK!\n\n❌ שימוש במינוח לא סטנדרטי – הסיכון על השחקן.`,
+        tip: "💡 תמיד דבר בבירור! 'RAISE to 10,000' עדיף על כל ז'סט." },
+      { number: 4, title: "זיהוי שחקנים", summary: "חייבים להיות ניתנים לזיהוי בכל עת",
+        full: `כלל מחוזק ב-2024!\n\n✅ כל שחקן חייב להיות ניתן לזיהוי ברור.\n\n❌ צוות הטורניר רשאי לבקש הסרה של:\n• משקפי שמש המסתירות פנים\n• כובע עם שולים נרחבים\n• כיסוי פנים\n• כל אביזר מסיח\n\n👮 האחריות: ה-TD וה-Floor.`,
+        tip: "💡 כיסוי פנים מסיבות דתיות/רפואיות – כדאי לדבר עם הטורניר מראש." },
+      { number: 5, title: "מכשירים אלקטרוניים", summary: "טלפונים ואפליקציות אסורים",
+        full: `כלל חדש ב-2024 – בעקבות פרשת WSOP 2024!\n\nA) אסור לדבר בטלפון. רינגטונים, מוזיקה, וידאו – שקטים.\nB) מכשירים לא על השולחן.\nC) שחקן עם יד חיה – אסור להשתמש במכשיר.\nD) ❌ אסור: אפליקציות הימור, טבלאות אסטרטגיה, עצות מאדם אחר.\n\n⚠️ הפרות כפופות לעונש לפי כלל 71.`,
+        tip: "💡 הכלל הוסף כי ב-WSOP 2024 השתמשו בלפטופ ב-Rail!" },
+    ]
+  },
+  {
+    id: "seating", title: "ישיבה ואיזון שולחנות", icon: "🪑", color: "#7eb8a4",
+    rules: [
+      { number: 7, title: "ישיבה אקראית", summary: "מקומות מוקצים אקראית",
+        full: `כל מקום בטורניר מוקצה אקראית.\n\n⚠️ שחקן במושב לא נכון:\n• לפני SA → עובר עם הצ'יפים הנוכחיים שלו\n• עם ערימה נכונה במושב לא נכון → עובר עם הסכום הכולל`,
+        tip: "💡 תמיד בדוק מספר מושב ושולחן!" },
+      { number: 8, title: "רישום מאוחר וכניסות מחדש", summary: "שחקנים חדשים מקבלים ערימה מלאה",
+        full: `A) חלופות, רישום מאוחר, כניסות מחדש:\n• ערימה מלאה\n• הגרלת מושב אקראי\n• נכנסים מיד – חוץ ממקום בין SB לבאטון\n\nB) כניסה חוזרת: צ'יפים שהוותרו עליהם מוסרים מהמשחק.`,
+        tip: "💡 Late Registration – בדוק מתי נסגר החלון (בד\"כ אחרי כמה רמות)." },
+      { number: 11, title: "איזון שולחנות", summary: "שולחנות מאוזנים לאורך הטורניר",
+        full: `A) מי עובר: השחקן שיהיה BB הבא – לפוזיציה הגרועה ביותר בשולחן החדש.\nהפוזיציה הגרועה NEVER = SB.\n\nD) עצירת משחק: כשהפרש של 3+ שחקנים בין שולחנות – המשחק נעצר.\n\nסדר פוזיציות מגרוע לטוב:\nBB → UTG → MP → CO → BTN → SB`,
+        tip: "💡 השחקן המועבר עלול לשלם BB פעמיים ברצף!" },
+    ]
+  },
+  {
+    id: "showdown", title: "שואדאון", icon: "🃏", color: "#e07b6a",
+    rules: [
+      { number: 12, title: "Cards Speak", summary: "הקלפים קובעים – לא ההכרזה",
+        full: `הכלל הכי חשוב בשואדאון!\n\n✅ הקלפים עצמם קובעים מי מנצח – לא מה שנאמר.\n\nהכרזות מילוליות אינן מחייבות בשואדאון.\n⚠️ הכרזה מכוונת שגויה – עלולה לגרור עונש!\n\nהדילר קורא ומכריז. כל שחקן צריך לדבר אם רואה טעות.`,
+        tip: "💡 אם הדילר טועה בקריאת יד – דבר מיד!" },
+      { number: 13, title: "הנחת קלפים", summary: "חייבים להניח את כל הקלפים",
+        full: `A) הנחה נכונה:\n1. הפיכת כל הקלפים פניהם למעלה\n2. ניתן לדילר ולשחקנים לקרוא\n\nB) ⚠️ שחקן שמניח חלק ואז מקמץ – עושה זאת על אחריותו.\nאם היד אינה ניתנת לאחזור ב-100% – אין תביעה על הקופה.\n\nC) ✅ הדילר אינו יכול לפסול יד שהונחה כראוי.`,
+        tip: "💡 הנח תמיד את שני הקלפים פניהם למעלה – גם אם בטוח שניצחת!" },
+      { number: 16, title: "כל הקלפים גלויים באול-אין", summary: "אול-אין = כולם מניחים קלפים",
+        full: `כשיש אול-אין וכל ההימורים הסתיימו:\n\n✅ כל הידיים מוצגות מיד ללא עיכוב.\n❌ אף שחקן לא יכול לקמץ ידו.\n✅ כל הידיים בקופה הראשית ובקופות הצדדיות – חיות.`,
+        tip: "💡 זה מגן על שחקני הקופה הצדדית." },
+      { number: 17, title: "סדר הצגת קלפים", summary: "מי מציג ראשון?",
+        full: `A) האגרסיב האחרון בסיבוב האחרון מציג ראשון.\nאם לא היה הימור – מי שפועל ראשון מציג ראשון.\n\nB) אם כולם קימצו פניהם למטה – השחקן האחרון מנצח ואינו חייב להציג.`,
+        tip: "💡 אם אתה הזוכה ולא חייב להציג – זכותך לשמור ידיים." },
+      { number: 18, title: "בקשה לראות יד", summary: "מתי מותר לבקש לראות יד?",
+        full: `A) ❌ שחקנים שקימצו פניהם למטה – אינם יכולים לבקש לראות ידיים.\n\nB) ✅ זכות בלתי-ניתנת לפדיון:\nאם היה הימור בריבר – כל מי שהשווה זכאי לראות יד האגרסיב, בתנאי שהציג/שומר קלפיו.\n\n⚠️ בקשות אחרות – לשיקול ה-TD.`,
+        tip: "💡 הזכות הזו קיימת למנוע סינים לא הוגנים." },
+    ]
+  },
+  {
+    id: "betting", title: "הימורים והעלאות", icon: "💰", color: "#8b7cb8",
+    rules: [
+      { number: 40, title: "שיטות הימור", summary: "מה שראשון מגדיר את ההימור",
+        full: `A) מילולי ו/או צ'יפים. מה שראשון קובע.\nאם בו-זמנית – הכרזה ברורה גוברת; אחרת – צ'יפים.\n\nB) הכרזות: כללי ("call"), סכום ("אלף"), שניהם ("raise, אלף").\n\nC) הכרזת סכום = דחיפת אותה כמות בשקט.`,
+        tip: "💡 אמור בקול מה אתה עושה לפני שדוחף צ'יפים!" },
+      { number: 42, title: "שיטות העלאה", summary: "כיצד לבצע RAISE נכון",
+        full: `RAISE חייב להיות:\nA) דחיפת הסכום המלא בתנועה אחת, או\nB) הכרזה מילולית ברורה לפני הדחיפה.\n\n⚠️ צ'יפ בודד ללא הכרזה = CALL (להשוות) בלבד.\n❌ String Bet אסור (שתי תנועות ללא הכרזה).`,
+        tip: "💡 תמיד אמור 'RAISE' לפני שדוחף צ'יפים נוספים!" },
+      { number: 43, title: "גודל RAISE מינימלי", summary: "RAISE = לפחות שווה ל-bet הגדול ביותר",
+        full: `RAISE מינימלי = לפחות שווה לגודל ה-bet/raise הגדול ביותר בסיבוב (לא הסכום הכולל!).\n\n✅ דוגמה פוסט-פלופ:\n• בליינדים 500/1,000\n• A פותח ב-3,000 (הימור ראשון בסיבוב)\n• גודל ה-bet = 3,000\n• RAISE מינימלי = 3,000 + 3,000 = 6,000\n\n✅ דוגמה פרה-פלופ:\n• בליינדים 1,000/2,000\n• A פותח ל-4,000 (raise של 2,000 מעל BB)\n• גודל ה-raise = 4,000 - 2,000 = 2,000\n• RAISE מינימלי = 4,000 + 2,000 = 6,000\n\nשחקן שמעלה 50%+ אך פחות ממינימום – חייב להשלים לRAISE מלא.\nפחות מ-50% – זה CALL (אלא אם 'raise' הוכרז קודם).`,
+        tip: "💡 All-In שאינו RAISE מלא – לא פותח מחדש את ההימור." },
+      { number: 44, title: "צ'יפ גדול (Overchip)", summary: "צ'יפ גדול מול הימור = להשוות",
+        full: `מול הימור – צ'יפ גדול בודד = CALL (להשוות), אלא אם הוכרז RAISE לפני שהצ'יפ נגע לשולחן.\n\nאם הוכרז RAISE ללא סכום – הRAISE הוא המקסימום האפשרי לצ'יפ.\n\nאם לא מול הימור – דחיפת צ'יפ גדול בשקט = BET של המקסימום.`,
+        tip: "💡 הכרז 'RAISE' לפני שהצ'יפ יוצא מהיד!" },
+      { number: 45, title: "מרובה צ'יפים", summary: "מרובה צ'יפים בשקט = להשוות",
+        full: `A) מרובה צ'יפים מול הימור – CALL (להשוות) אם כל צ'יפ נחוץ לביצוע ההשוואה.\n\nדוגמה:\n• A מהמר 400, B מעלה ל-1,100\n• C דוחף 500+1,000 בשקט\n• הסרת ה-500 משאיר פחות מ-1,100 → להשוות!\n\nB) אם לא כל הצ'יפ נחוץ – כלל 50% קובע (כלל 43).`,
+        tip: "💡 לפני שדוחף צ'יפים מרובים – חשב אם זה CALL או RAISE!" },
+    ]
+  },
+  {
+    id: "procedures", title: "נהלים מיוחדים", icon: "📋", color: "#5b9bd5",
+    rules: [
+      { number: 29, title: "בקשת שעון (Clock)", summary: "כיצד להאיץ שחקן",
+        full: `✅ מי יכול לבקש: כל שחקן באירוע (חייב להיות ליד השולחן).\n\n⏱️ לאחר Clock:\n• 25 שניות + ספירה לאחור של 5 שניות\n\nאם הזמן פג:\n• מול הימור = FOLD\n• ללא הימור = CHECK\n\n🟡 תיקו: לטובת השחקן.`,
+        tip: "💡 השתמש ב-Clock לשמור על קצב – לא כנשק." },
+      { number: 35, title: "מיסדיל", summary: "מתי מכריזים מיסדיל",
+        full: `מיסדיל כאשר:\n1. 2+ קלפים הפוכים בחלוקה הראשונה\n2. קלף ראשון לכיסא לא נכון\n3. קלפים לכיסא שלא זכאי\n4. כיסא זכאי לא קיבל קלפים\n5. מספר שגוי של קלפים\n6. לפני SA – קלף לא סטנדרטי\n\n✅ במיסדיל: חלוקה מחדש – באטון לא זז.\n❌ לאחר SA – לא ניתן להכריז מיסדיל.`,
+        tip: "💡 SA = כל 2 פעולות בתור (לפחות אחת מכניסה צ'יפים)." },
+      { number: 36, title: "Substantial Action (SA)", summary: "מה זה פעולה מהותית",
+        full: `SA = הגבול שאחריו לא ניתן לבטל ידיים.\n\nSA הוא אחד מ:\nA) כל 2 פעולות בתור, לפחות אחת מכניסה צ'יפים\n   (לא: 2 checks, לא 2 folds)\n\nB) כל שילוב של 3 פעולות בתור\n\n📌 בליינדים ממוקמים לא נחשבים ל-SA!`,
+        tip: "💡 כשנכנסים ל-SA – לא ניתן לחזור אחורה אפילו בטעות בחלוקה." },
+      { number: 53, title: "פעולה שלא בתור (OOT)", summary: "מה קורה כשמישהו פועל לא בתורו",
+        full: `A) כל פעולה OOT תחזור לשחקן הנכון.\nהפעולה ה-OOT כפופה לעונש ומחייבת אם הפעולה עד ה-OOT לא השתנתה.\n\nFold שלא בתור – תמיד מחייב!\n\nB) שחקן שדולג חייב לדרוש את זכותו לפעול לפני SA!`,
+        tip: "💡 FOLD שלא בתורך תמיד מחייב – היזהר!" },
+      { number: 24, title: "Chip Race ו-Color Up", summary: "הוצאת שטרות קטנים",
+        full: `Color Up = החלפת צ'יפים קטנים לגדולים.\n\nA) Chip Race:\n• מתחיל ממושב 1\n• מקסימום צ'יפ אחד לשחקן\n• ❌ שחקן לא מסולק בגלל race – מקבל צ'יפ אחד!\n\nB) צ'יפים חייבים להיות גלויים לחלוטין.\n\nC) שאריות שאינן מגיעות לדנומינציה המינימלית – מוסרות ללא פיצוי.`,
+        tip: "💡 כשמכריזים Color Up – ספור את הצ'יפים הקטנים שלך!" },
+    ]
+  },
+  {
+    id: "penalties", title: "עונשים ואתיקה", icon: "🚨", color: "#d4735e",
+    rules: [
+      { number: 67, title: "שחקן אחד ליד", summary: "אסור לייעץ או לדון בידיים",
+        full: `שחקנים (בתוך היד ומחוצה לה) אסור:\n1. לדון בתוכן ידיים חיות או מוקמצות\n2. לייעץ או לבקר משחק\n3. לקרוא יד שטרם הונחה\n\nOne-player-to-a-hand: אסור להראות יד לאחר או לדון באסטרטגיה.`,
+        tip: "💡 גם 'אוי' בנימה מסוימת עלול להחשב כחשיפת מידע!" },
+      { number: 70, title: "עונשי עיכוב", summary: "עיכוב מכוון גורר עונש",
+        full: `סולם עונשים:\n• אזהרה\n• 1 יד פנלטי\n• 2 ידיים פנלטי\n• 10 דקות פנלטי\n• 20 דקות פנלטי\n• פסילה\n\nזמן לפעולה: 25 שניות + 5 ספירה לאחור.`,
+        tip: "💡 על עונש ידיים: מקבל קלפים אבל הם נפסלים מיד. הבליינדים ממשיכים!" },
+      { number: 71, title: "סוגי עונשים", summary: "עונשי ידיים ועונשי זמן",
+        full: `A) עונשי ידיים: קלפים מחולקים ונפסלים. בליינדים רצים.\n\nB) עונשי זמן: שחקן עוזב את השולחן. בליינדים רצים!\n\nC) עבירות:\n• Angle Shooting\n• הסתרת ערימה\n• נסיגה מכוונת מבליינד\n• הפרת כלל 5\n• התנהגות בלתי-ראויה`,
+        tip: "💡 Angle Shooting = ניסיון להשיג יתרון בדרך לא הוגנת." },
+      { number: 72, title: "פסילה", summary: "מתי מפסלים שחקן",
+        full: `שחקן עלול להיפסל עבור:\n• אלימות פיזית או איומים\n• גרימת סצינה\n• קנוניה עם שחקנים אחרים\n• Chip Dumping\n• כל התנהגות שמנהל בכיר קובע כמצדיקה פסילה\n\n⚠️ פסילה = יציאה מהאירוע. הצ'יפים מוסרים.`,
+        tip: "💡 גם עלבון מילולי חמור עלול לגרור פסילה." },
+    ]
+  },
+];
+
+const addendumExamples = [
+  { id:"a1", rule:"כלל 43", title:"RAISE מינימלי",
+    scenario:"NLHE. בליינדים 100/200. שחקן A פותח ב-600. מה RAISE המינימלי של B?",
+    steps:["ה-bet של A = 600","RAISE מינימלי = 600 + 600 = 1,200","B חייב להעלות לפחות ל-1,200"],
+    result:"✅ RAISE מינימלי = 1,200 סך הכל",
+    note:"הRAISE שווה ל-bet הגדול ביותר בסיבוב, לא לגודל ה-raise בלבד." },
+  { id:"a2", rule:"כלל 43 – 50%", title:"RAISE חלקי",
+    scenario:"NLHE. A מהמר 1,000. B דוחף 1,400 בשקט (ללא הכרזה). מה הפסיקה?",
+    steps:["ה-bet = 1,000","RAISE מינימלי = 2,000","B דחף 1,400 = 40% מעל ה-1,000","פחות מ-50% ← CALL בלבד","אם B הכריז 'RAISE' לפני – חייב להשלים ל-2,000"],
+    result:"❌ 1,400 בשקט = להשוות ל-1,000 (חוזרים 400)",
+    note:"50%+ מהbet = חייב RAISE מלא. פחות מ-50% = להשוות אלא אם הוכרז 'raise' תחילה." },
+  { id:"a3", rule:"כלל 44", title:"צ'יפ גדול (Overchip)",
+    scenario:"בליינדים 500/1,000. A מהמר 3,000. B דוחף בשקט צ'יפ של 5,000. מה זה?",
+    steps:["B דחף צ'יפ בודד בשקט","לא הוכרז RAISE לפני","⟹ להשוות (CALL) ל-3,000","מחזירים 2,000 ל-B"],
+    result:"✅ להשוות (CALL) ל-3,000. חוזרים 2,000 ל-B.",
+    note:"כדי ש-5,000 יהיה RAISE – B צריך לומר 'RAISE' לפני שהצ'יפ נוגע בשולחן." },
+  { id:"a4", rule:"כלל 45", title:"מרובה צ'יפים",
+    scenario:"בליינדים 25/50. A פותח ב-1,050. B דוחף בשקט שני צ'יפים של 1,000 (סה\"כ 2,000). מה זה?",
+    steps:["ההשוואה = 1,050","B דחף 2,000 (שניים של 1,000)","הסרת צ'יפ אחד של 1,000 משאיר 1,000 < 1,050","כל צ'יפ נחוץ ⟹ להשוות"],
+    result:"✅ להשוות (CALL) ל-1,050. חוזרים 950 ל-B.",
+    note:"אם B דחף 1,000+500=1,500: הסרת ה-500 משאיר 1,000 < 1,050 → עדיין להשוות." },
+  { id:"a5", rule:"כלל 47", title:"All-In קצר – פתיחת הימור",
+    scenario:"בליינדים 500/1,000. A מעלה ל-3,000. B משווה. C אול-אין ב-3,500. D כבר השווה ל-3,000. האם D יכול לrerise?",
+    steps:["A מעלה ל-3,000: גודל ה-raise = 3,000-1,000 = 2,000 מעל BB","C אול-אין ב-3,500 = רק 500 נוסף מעל A","RAISE מלא הבא = לפחות 3,000+2,000 = 5,000","500 < 2,000 (גודל raise מינימלי) ← לא פותח מחדש","D שכבר השווה ל-3,000 – לא יכול לrerise"],
+    result:"❌ D לא יכול לrerise. יכול רק להשוות ל-3,500 או לקפל.",
+    note:"All-In קצר שלא מגיע לRaise מלא לא מאפשר לשחקנים שכבר פעלו לrerise." },
+  { id:"a6", rule:"כלל 16", title:"הנחת קלפים באול-אין",
+    scenario:"A אול-אין. B ו-C השוו. מה קורה?",
+    steps:["כל ההימורים הסתיימו","כל שחקן (A, B, C) חייב להניח קלפים פניהם למעלה מיד","אין עיכובים, אין 'slowrolling'","גם הידיים בקופות הצדדיות – חיות וגלויות"],
+    result:"✅ כל 3 השחקנים מניחים קלפים גלויים.",
+    note:"זה מגן על שחקן הקופה הצדדית מהימורים נוספים על יד ידועה." },
+  { id:"a7", rule:"כלל 53", title:"פעולה שלא בתור (OOT)",
+    scenario:"תור A לפעול. B מקפל שלא בתורו. A בודק. עכשיו תור C. האם OOT של B מחייב?",
+    steps:["B קיפל שלא בתורו (OOT fold)","OOT fold תמיד מחייב – לא משנה מה יקרה","A בדק (לא השתנה כלפי B – כי B כבר קיפל)","C מקבל הפעולה שלו כרגיל"],
+    result:"✅ B קיפל – סופי ומחייב. C ממשיך כרגיל.",
+    note:"FOLD שלא בתור תמיד מחייב! זה שונה מ-check/call/raise שלא בתור." },
+  { id:"a8", rule:"כלל 20", title:"צ'יפ בודד בקופה (Odd Chip)",
+    scenario:"שניים חולקים קופה ב-Hold'em. יש צ'יפ בודד שנותר. מה עושים?",
+    steps:["תחילה: שוברים לדנומינציה הקטנה ביותר במשחק","בHold'em עם 2+ ידיים שוות: הצ'יפ הולך למושב הראשון משמאל הבאטון","בStud: הצ'יפ הולך לקלף הגבוה ביותר לפי חליפה","בH/L split: הצ'יפ הולך לצד HIGH"],
+    result:"✅ בHold'em: הצ'יפ הבודד למושב ראשון שמאל הבאטון.",
+    note:"סדר חליפות: ♠ > ♥ > ♦ > ♣" },
+];
+
+const practiceQuiz = [
+  { q:"שחקן דוחף בשקט צ'יפ של 5,000 מול הימור של 3,000. מה זה?", options:["RAISE ל-5,000","להשוות (CALL) ל-3,000","All-in","FOLD"], answer:1, exp:"כלל 44: צ'יפ בודד בשקט מול הימור = להשוות. כדי RAISE חייב להכריז 'RAISE' לפני." },
+  { q:"הקשה על השולחן בזמן שפעולה ממתינה פירושה:", options:["FOLD","ALL-IN","CHECK","להשוות"], answer:2, exp:"כלל 3: הקשה על השולחן = CHECK." },
+  { q:"שחקן מכריז 'יש לי זוג אסים' אבל הקלפים מראים סטרייט – מי מנצח?", options:["מי שהכריז נכון","הקלפים (Cards Speak)","ה-TD מחליט","חוזרים קלפים"], answer:1, exp:"כלל 12 – Cards Speak: הקלפים קובעים, לא ההכרזה." },
+  { q:"מתי ניתן להכריז מיסדיל?", options:["בכל עת","רק לפני SA","רק לאחר SA","רק לפני פלופ"], answer:1, exp:"כלל 35: לאחר SA לא ניתן להכריז מיסדיל." },
+  { q:"כמה זמן יש לשחקן לאחר שנקרא Clock?", options:["10 שניות","30 שניות","25 שניות + 5 ספירה לאחור","60 שניות"], answer:2, exp:"כלל 29: 25 שניות + ספירה לאחור של 5 שניות." },
+  { q:"שחקן עם יד חיה עוזב את השולחן – מה קורה?", options:["היד נפסלת מיד","עצירת המשחק","השחקן עלול להיענש","FOLD אוטומטי"], answer:2, exp:"כלל 31: עזיבת השולחן כפופה לעונש." },
+  { q:"בליינדים 500/1,000. פוסט-פלופ, A פותח ב-3,000 (הימור ראשון). B רוצה RAISE מינימלי. כמה?", options:["4,000","5,000","6,000","7,000"], answer:2, exp:"כלל 43: גודל ה-bet של A = 3,000. RAISE מינימלי = 3,000 + 3,000 = 6,000." },
+  { q:"FOLD שלא בתור (OOT) – מה הדין?", options:["לא מחייב","מחייב תמיד","תלוי ב-TD","מחייב רק אם A השווה"], answer:1, exp:"כלל 53: OOT fold תמיד מחייב." },
+  { q:"מי זכאי לראות יד אחרי הימור בריבר?", options:["כל שחקן בשולחן","רק ה-TD","כל מי שהשווה ושומר/הציג קלפיו","רק מי שיש לו ידיים"], answer:2, exp:"כלל 18B: כל מי שהשווה זכאי לראות יד האגרסיב, בתנאי שהציג/שומר קלפיו." },
+  { q:"שחקן מאבד את כל צ'יפיו ב-Chip Race – מה קורה?", options:["יוצא מהטורניר","מקבל צ'יפ אחד מהדנומינציה הקטנה","מקבל חזרה את הצ'יפים שלו","ה-TD מחליט"], answer:1, exp:"כלל 24: שחקן לא יכול להיות מסולק ב-Race." },
+  { q:"מה זה String Bet?", options:["הימור מהמחסנית","הימור בשתי תנועות נפרדות ללא הכרזה","הימור מעל לקופה","הימור מתחת למינימום"], answer:1, exp:"כלל 56: String Bet = מספר תנועות נפרדות ללא הכרזה מוקדמת – אסור." },
+  { q:"שחקן לא נמצא במושב כשמחולק הקלף האחרון – מה קורה ליד?", options:["מקבל את היד אח\"כ","היד נפסלת מיד","יכול לשחק אבל לא לראות","ה-TD מחליט"], answer:1, exp:"כלל 30: שחקן שלא במושב כשמחולק הקלף האחרון – ידו נפסלת מיד." },
+  { q:"מה זה Rabbit Hunting?", options:["חיפוש צ'יפים אבודים","חשיפת קלפים שהיו יוצאים אילו היד לא הסתיימה","בדיקת זיהוי שחקן","ספירת צ'יפי יריב"], answer:1, exp:"כלל 28: Rabbit Hunting = חשיפת קלפים שהיו יוצאים – אסור." },
+  { q:"מה קורה לצ'יפ בודד בקופה כשיש 2 ידיים שוות ב-Hold'em?", options:["מחולק שווה","הולך למושב ראשון משמאל הבאטון","הולך לשחקן עם יד גבוהה","נשאר בקופה ליד הבאה"], answer:1, exp:"כלל 20A: בflop games עם 2 ידיים שוות – הצ'יפ הבודד הולך למושב ראשון משמאל הבאטון." },
+  { q:"שחקן A אמר 'RAISE', B השווה לפני שסכום ידוע. מה קורה?", options:["B משלם את הסכום שאמר","ה-TD יפסוק לפי נסיבות","B חוזר","B חייב לקפל"], answer:1, exp:"כלל 59B: ה-TD יפסוק לפי נסיבות, כולל אפשרות לחייב B להשוות לכל סכום." },
+];
+
+const certExam = [
+  { q:"מה העקרון המרכזי של כלל 1?", options:["הדילר תמיד צודק","טובת המשחק והוגנות גוברות על כלל טכני","השחקן הוותיק מחליט","ה-TD אינו יכול לבטל כלל"], answer:1, rule:"כלל 1" },
+  { q:"מה ההגדרה של Substantial Action (SA)?", options:["3 שחקנים השוו","כל 2 פעולות בתור (לפחות אחת מכניסה צ'יפים) או כל 3 פעולות","הפלופ נחשף","הבליינד שולם"], answer:1, rule:"כלל 36" },
+  { q:"שחקן דוחף צ'יפ בודד גדול בשקט מול הימור – מה זה?", options:["RAISE","להשוות (CALL)","ALL-IN","FOLD"], answer:1, rule:"כלל 44" },
+  { q:"האם FOLD שלא בתור מחייב?", options:["לא","כן, תמיד","רק אם ה-TD מחליט","רק בשואדאון"], answer:1, rule:"כלל 53" },
+  { q:"מה הזמן שיש לשחקן לאחר Clock?", options:["10 שניות","20 שניות","25 שניות + 5 ספירה","60 שניות"], answer:2, rule:"כלל 29" },
+  { q:"מה קורה לשחקן שמאבד את כל צ'יפיו ב-Chip Race?", options:["יוצא","מקבל צ'יפ אחד מהדנומינציה הקטנה","מקבל חצי ממה שהיה לו","שום דבר"], answer:1, rule:"כלל 24" },
+  { q:"מתי ניתן להכריז מיסדיל?", options:["בכל עת","רק לפני SA","רק לאחר SA","לא ניתן בכלל"], answer:1, rule:"כלל 35" },
+  { q:"בליינדים 200/400. פרה-פלופ, A פותח ל-1,200. RAISE מינימלי של B?", options:["1,600","2,000","2,400","1,800"], answer:1, rule:"כלל 43" },
+  { q:"מה קובע את הזוכה בשואדאון?", options:["הכרזה מילולית","הקלפים (Cards Speak)","הראשון להניח","הדילר"], answer:1, rule:"כלל 12" },
+  { q:"שחקן לא במושב כשמחולק הקלף האחרון – מה קורה?", options:["מקבל יד","ידו נפסלת","יכול לקפל","ה-TD מחליט"], answer:1, rule:"כלל 30" },
+  { q:"מה זה Dead Button?", options:["באטון ללא שחקן שמשלם בליינדים","באטון בצבע שחור","באטון לאחר ריבאי","שחקן שנפסל"], answer:0, rule:"כלל 32" },
+  { q:"מה אסור לשחקן לפי כלל 67?", options:["לדון בידיים חיות","לשחק גרוע","להעלות גבוה","לקפל מוקדם"], answer:0, rule:"כלל 67" },
+  { q:"String Bet הוא:", options:["הימור גבוה מהקופה","הימור בשתי תנועות ללא הכרזה","הימור קטן מהמינימום","הימור בשלב לא נכון"], answer:1, rule:"כלל 56" },
+  { q:"מי יכול לבקש Clock?", options:["רק ה-TD","רק שחקנים ביד","כל שחקן באירוע (מהמושב)","רק הדילר"], answer:2, rule:"כלל 29" },
+  { q:"Rabbit Hunting הוא:", options:["חיפוש צ'יפים","חשיפת קלפים שהיו יוצאים","ספירת הקופה","בדיקת הדק"], answer:1, rule:"כלל 28" },
+  { q:"מה קורה לצ'יפ בודד בקופה ב-Hold'em עם שוויון?", options:["מחולק שווה","הולך למושב ראשון משמאל הבאטון","הולך לשחקן עם יד גבוהה","נשאר לקופה הבאה"], answer:1, rule:"כלל 20" },
+  { q:"שחקן שלא ב-All-In רוצה לקמץ יד לאחר שכולם השוו – האם מותר?", options:["כן, תמיד","כן, אם הוא ניצח","לא, כולם חייבים להניח","כן, בהחלטת TD"], answer:2, rule:"כלל 16" },
+  { q:"מה קורה אם הפלופ יצא עם 4 קלפים?", options:["מיסדיל","הדילר אקראי בוחר 1 כburn והשאר = פלופ","קלף אחד מוחזר לחפיסה","ה-TD מחליט"], answer:1, rule:"כלל 39" },
+  { q:"מתי שחקן יכול לבקש ספירה מדויקת של ערימת יריב?", options:["בכל עת","רק בפרה-פלופ","רק כשמול All-In ובתורו","רק ה-TD יכול לספור"], answer:2, rule:"כלל 60" },
+  { q:"מה הדין של 'conditional statement' כמו 'אם תהמר, אעלה'?", options:["מחייב תמיד","לא סטנדרטי, עלול להיות מחייב ו/או לגרור עונש","מותר לחלוטין","מחייב רק בפרה-פלופ"], answer:1, rule:"כלל 59" },
+  { q:"בליינדים 25/50. A פותח ב-1,050. B דוחף 2×1,000 בשקט. מה זה?", options:["RAISE ל-2,000","להשוות ל-1,050","ALL-IN","RAISE ל-1,500"], answer:1, rule:"כלל 45" },
+  { q:"שחקן מכריז 'I bet five' כשהקופה פחות מ-5,000. מה ההימור?", options:["5","500","5,000","תלוי ב-TD"], answer:1, rule:"כלל 57" },
+  { q:"כמה raises מותרים ב-No-Limit?", options:["3","4","5","אין מגבלה"], answer:3, rule:"כלל 48" },
+  { q:"מה קורה כשנמצא פלון (fouled deck)?", options:["המשחק ממשיך","כל ההימורים מוחזרים ללא קשר ל-SA","מיסדיל רגיל","ה-TD מחליט"], answer:1, rule:"כלל 35E" },
+  { q:"שחקן A אמר 'RAISE', B השווה לפני שסכום ידוע. מה קורה?", options:["B משלם את הסכום שאמר","ה-TD יפסוק לפי נסיבות","B חוזר","B חייב לקפל"], answer:1, rule:"כלל 59B" },
+  { q:"כמה קלפים 'כל הקלפים' ב-Omaha?", options:["2","4","5","7"], answer:1, rule:"כלל 13" },
+  { q:"שחקן מעלה ל-50%-99% מה-bet הקודם (לא מלא). מה חייב?", options:["להשוות","RAISE מלא","לקפל","לשלם 50% בלבד"], answer:1, rule:"כלל 43" },
+  { q:"מה קורה לשחקן שיוצא מהשולחן עם יד חיה?", options:["היד נפסלת","כפוף לעונש","צריך לחזור מיד","רק מזהירים"], answer:1, rule:"כלל 31" },
+  { q:"הכרזת 'call' כשאין הימור =", options:["להשוות","CHECK","RAISE","FOLD"], answer:1, rule:"כלל 55" },
+  { q:"הכרזת 'raise' כשאין הימור =", options:["RAISE","CHECK","חייב לבצע bet מינימלי","FOLD"], answer:2, rule:"כלל 55" },
+  { q:"באיזון שולחנות ב-Hold'em: מי עובר?", options:["השחקן עם הכי פחות צ'יפים","השחקן שיהיה BB הבא","השחקן הקרוב לבאטון","השחקן שישב ראשון"], answer:1, rule:"כלל 11" },
+  { q:"מה הפוזיציה הגרועה ביותר שאליה שחקן מועבר?", options:["SB","BB","UTG","CO"], answer:1, rule:"כלל 11" },
+  { q:"שחקן קיפל ידו וגילה שהיתה הטובה ביותר – האם יכול לתבוע הקופה?", options:["כן","לא אם הקלפים לא ניתנים לאחזור 100%","רק אם ה-TD מסכים","כן אם שחקנים ראו"], answer:1, rule:"כלל 13B" },
+  { q:"מה הכלל לגבי שינוי חפיסות?", options:["בכל עת לפי בקשת שחקן","על הדיל פוש, שינוי רמות, או לפי מדיניות הבית","כל 30 דקות","רק ה-TD יכול לבקש"], answer:1, rule:"כלל 26" },
+  { q:"מה זה Angle Shooting?", options:["ירי מדויק בפוקר","ניסיון להשיג יתרון לא הוגן בצורה 'טכנית'","סוג של RAISE","אסטרטגיה לגיטימית"], answer:1, rule:"כלל 71" },
+  { q:"מה קורה לצ'יפים אבודים שלא ניתן לקבוע לאות?", options:["מחולקים שווה","מוסרים למלאי הטורניר","הולכים לפלור","ה-TD שומר"], answer:1, rule:"כלל 64" },
+  { q:"שחקן על עונש ידיים מקבל קלפים – מה קורה להם?", options:["משחק רגיל","נפסלים מיד","יכול לFold רק","שומרים להשוואה"], answer:1, rule:"כלל 71" },
+  { q:"מה חוק ה-Re-buy לגבי החמצת ידיים?", options:["מותר להחמיץ יד אחת","אסור להחמיץ יד; מי שהכריז re-buy משחק chips behind","חייב לחכות לבליינד","ה-TD מחליט"], answer:1, rule:"כלל 27" },
+  { q:"כמה חברים יש ב-TDA?", options:["מעל 1,000","מעל 3,000","מעל 5,000","מעל 10,000"], answer:2, rule:"כללי" },
+  { q:"מה נדרש לעבור הסמכת TDA?", options:["70%","80%","90% (36/40)","100%"], answer:2, rule:"הסמכה" },
+];
+
+const COLORS = { home:"#c8a96e", learn:"#7eb8a4", addendum:"#5b9bd5", practice:"#8b7cb8", exam:"#e07b6a", search:"#5fc4b8", scenario:"#e0a050" };
+
+// flatten all rules for search
+const allRules = chapters.flatMap(ch => ch.rules.map(r => ({ ...r, chapterTitle: ch.title, chapterColor: ch.color, chapterId: ch.id })));
+
+const TDA_SYSTEM_PROMPT = `אתה מומחה לחוקי TDA (Tournament Directors Association) לפוקר, גרסת 2024.
+ענה תמיד בעברית, בצורה ממוקדת וברורה.
+השתמש במינוח הנכון:
+- POT = קופה או פוט
+- Blinds = בליינדים
+- Call = להשוות
+- Kill hand = לפסול יד
+- לא "סיר", לא "עיוורים", לא "לקרוא"
+
+כשאתה עונה על תרחיש, ציין:
+1. הפסיקה הסופית
+2. על איזה כלל TDA היא מבוססת (מספר הכלל)
+3. הסבר קצר
+4. אם יש נקודות נוספות רלוונטיות
+
+אל תמציא חוקים שאינם קיימים. אם אינך בטוח, אמור זאת.`;
+
+export default function App() {
+  const [mode, setMode] = useState("home");
+  const [activeChapter, setActiveChapter] = useState(null);
+  const [activeRule, setActiveRule] = useState(null);
+  const [activeAddendum, setActiveAddendum] = useState(null);
+
+  // search
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // scenario
+  const [scenario, setScenario] = useState("");
+  const [scenarioResult, setScenarioResult] = useState(null);
+  const [scenarioLoading, setScenarioLoading] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
+  const chatEndRef = useRef(null);
+
+  // practice
+  const [pqIdx, setPqIdx] = useState(0);
+  const [pqSel, setPqSel] = useState(null);
+  const [pqScore, setPqScore] = useState(0);
+  const [pqDone, setPqDone] = useState(false);
+
+  // exam
+  const [ceIdx, setCeIdx] = useState(0);
+  const [ceSel, setCeSel] = useState(null);
+  const [ceAnswers, setCeAnswers] = useState([]);
+  const [ceDone, setCeDone] = useState(false);
+  const [ceReview, setCeReview] = useState(false);
+
+  const resetPQ = () => { setPqIdx(0); setPqSel(null); setPqScore(0); setPqDone(false); };
+  const resetCE = () => { setCeIdx(0); setCeSel(null); setCeAnswers([]); setCeDone(false); setCeReview(false); };
+  const goMode = (m) => { setMode(m); setActiveChapter(null); setActiveRule(null); setActiveAddendum(null); };
+
+  const handlePQAnswer = (i) => {
+    if (pqSel !== null) return;
+    setPqSel(i);
+    if (i === practiceQuiz[pqIdx].answer) setPqScore(s => s + 1);
+  };
+  const nextPQ = () => { if (pqIdx+1 < practiceQuiz.length) { setPqIdx(q=>q+1); setPqSel(null); } else setPqDone(true); };
+  const handleCEAnswer = (i) => { if (ceSel!==null) return; setCeSel(i); };
+  const nextCE = () => {
+    const updated = [...ceAnswers, { sel:ceSel, correct: ceSel===certExam[ceIdx].answer }];
+    setCeAnswers(updated);
+    if (ceIdx+1 < certExam.length) { setCeIdx(c=>c+1); setCeSel(null); } else setCeDone(true);
+  };
+
+  const ceScore = ceAnswers.filter(a=>a.correct).length;
+  const cePct = ceDone ? Math.round((ceScore/certExam.length)*100) : 0;
+  const passed = cePct >= 90;
+
+  // search filter
+  const searchResults = searchQuery.trim().length > 1
+    ? allRules.filter(r =>
+        r.title.includes(searchQuery) ||
+        r.summary.includes(searchQuery) ||
+        r.full.includes(searchQuery) ||
+        String(r.number).includes(searchQuery)
+      )
+    : [];
+
+  // AI scenario
+  const askScenario = async () => {
+    if (!scenario.trim() || scenarioLoading) return;
+    const userMsg = scenario.trim();
+    setScenario("");
+    setScenarioLoading(true);
+    const newHistory = [...chatHistory, { role:"user", content: userMsg }];
+    setChatHistory(newHistory);
+    setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior:"smooth" }), 100);
+    try {
+      const messages = newHistory.map(m => ({ role: m.role, content: m.content }));
+      const payload = JSON.stringify({
+        model: "claude-sonnet-4-5",
+        max_tokens: 1000,
+        system: TDA_SYSTEM_PROMPT,
+        messages,
+      });
+
+      const reply = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "https://api.anthropic.com/v1/messages", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("anthropic-version", "2023-06-01");
+        xhr.setRequestHeader("anthropic-dangerous-direct-browser-access", "true");
+        xhr.timeout = 30000;
+        xhr.onload = () => {
+          try {
+            const data = JSON.parse(xhr.responseText);
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve(data?.content?.[0]?.text || "לא הצלחתי לעבד.");
+            } else {
+              resolve("שגיאה " + xhr.status + ": " + (data?.error?.message || xhr.responseText.substring(0,150)));
+            }
+          } catch(e) {
+            resolve("שגיאה בפענוח תגובה: " + xhr.responseText.substring(0,150));
+          }
+        };
+        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.ontimeout = () => reject(new Error("Timeout"));
+        xhr.send(payload);
+      });
+
+      setChatHistory([...newHistory, { role:"assistant", content: reply }]);
+    } catch(err) {
+      setChatHistory([...newHistory, { role:"assistant", content:"שגיאת חיבור: " + err.message }]);
+    }
+    setScenarioLoading(false);
+    setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior:"smooth" }), 100);
+  };
+
+  const S = {
+    wrap: { minHeight:"100vh", background:"linear-gradient(135deg,#0f0c1a 0%,#1a1228 50%,#0d1117 100%)", fontFamily:"'Segoe UI','Arial Hebrew',Arial,sans-serif", direction:"rtl", color:"#e8e0d0" },
+    header: { background:"linear-gradient(180deg,rgba(200,169,110,0.15) 0%,transparent 100%)", borderBottom:"1px solid rgba(200,169,110,0.3)", padding:"14px 16px 10px", textAlign:"center", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(12px)" },
+    inner: { maxWidth:520, margin:"0 auto", padding:"16px 14px 50px" },
+    card: (color) => ({ background:`linear-gradient(135deg,${color}15 0%,transparent 100%)`, border:`1px solid ${color}40`, borderRadius:14, padding:"13px 15px", marginBottom:9, cursor:"pointer", display:"flex", alignItems:"center", gap:11, width:"100%", color:"#e8e0d0", textAlign:"right" }),
+    badge: (color) => ({ minWidth:32, height:32, borderRadius:8, background:`${color}28`, border:`1px solid ${color}50`, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800, fontSize:12, color, flexShrink:0 }),
+    fullCard: (color) => ({ background:`linear-gradient(135deg,${color}15 0%,transparent 100%)`, border:`1px solid ${color}40`, borderRadius:16, padding:"17px", marginBottom:13 }),
+    back: (color) => ({ background:"none", border:"none", color, cursor:"pointer", fontSize:13, marginBottom:13, display:"flex", alignItems:"center", gap:5 }),
+    optBtn: (state) => {
+      let bg="rgba(255,255,255,0.04)", border="1px solid rgba(255,255,255,0.12)", color="#e8e0d0", fw=400;
+      if(state==="correct"){ bg="rgba(100,200,100,0.2)"; border="1px solid #4a9"; color="#8de8a0"; fw=700; }
+      if(state==="wrong"){ bg="rgba(200,80,80,0.2)"; border="1px solid #a44"; color="#e88080"; }
+      return { background:bg, border, borderRadius:11, padding:"11px 14px", textAlign:"right", cursor:"pointer", color, fontWeight:fw, fontSize:13, width:"100%", marginBottom:7 };
+    },
+  };
+
+  const NavBtn = ({m,ic,lb}) => (
+    <button onClick={() => goMode(m)} style={{ padding:"5px 11px", borderRadius:20, border:mode===m?"none":"1px solid rgba(200,169,110,0.35)", background:mode===m?COLORS[m]:"transparent", color:mode===m?"#0f0c1a":COLORS[m]||"#c8a96e", fontWeight:700, fontSize:11, cursor:"pointer" }}>
+      {ic} {lb}
+    </button>
+  );
+
+  return (
+    <div style={S.wrap}>
+      <div style={S.header}>
+        <div style={{ fontSize:9, letterSpacing:4, color:"#c8a96e", marginBottom:2, fontWeight:600 }}>POKER TDA • 2024</div>
+        <div style={{ fontSize:18, fontWeight:800, color:"#fff", marginBottom:9 }}>🃏 חוקי טורניר פוקר</div>
+        <div style={{ display:"flex", gap:4, justifyContent:"center", flexWrap:"wrap" }}>
+          <NavBtn m="home" ic="🏠" lb="בית" />
+          <NavBtn m="learn" ic="📖" lb="לימוד" />
+          <NavBtn m="addendum" ic="🖼️" lb="נספח" />
+          <NavBtn m="search" ic="🔍" lb="חיפוש" />
+          <NavBtn m="scenario" ic="🤖" lb="שאל AI" />
+          <NavBtn m="practice" ic="🎯" lb="תרגול" />
+          <NavBtn m="exam" ic="🏆" lb="הסמכה" />
+        </div>
+      </div>
+
+      <div style={S.inner}>
+
+        {/* HOME */}
+        {mode==="home" && (
+          <div>
+            <div style={{ ...S.fullCard("#c8a96e"), textAlign:"center", marginBottom:16 }}>
+              <div style={{ fontSize:32, marginBottom:7 }}>⚖️</div>
+              <div style={{ fontSize:16, fontWeight:700, color:"#c8a96e", marginBottom:5 }}>ברוכים הבאים ל-TDA</div>
+              <div style={{ fontSize:13, lineHeight:1.7, color:"#b0a090" }}>ה-Tournament Directors Association קובע חוקי טורניר פוקר ברחבי העולם. למד, תרגל והסמך!</div>
+            </div>
+            {[
+              ["📖","לימוד חוקים","6 פרקים, 25+ כללים בעברית","learn"],
+              ["🖼️","נספח דוגמאות","8 מצבים אמיתיים עם פתרונות","addendum"],
+              ["🔍","חיפוש","חפש כל כלל לפי מילת מפתח","search"],
+              ["🤖","שאל AI","הזן תרחיש וקבל פסיקה לפי TDA","scenario"],
+              ["🎯","תרגול","15 שאלות על הכללים החשובים","practice"],
+              ["🏆","מבחן הסמכה","40 שאלות – נדרש 90% כמו TDA האמיתי","exam"],
+            ].map(([ic,title,desc,m]) => (
+              <button key={m} onClick={() => { goMode(m); if(m==="practice") resetPQ(); if(m==="exam") resetCE(); }}
+                style={{ ...S.card(COLORS[m]), justifyContent:"flex-start" }}>
+                <span style={{ fontSize:22 }}>{ic}</span>
+                <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14, color:COLORS[m] }}>{title}</div><div style={{ fontSize:12, color:"#7a7060", marginTop:2 }}>{desc}</div></div>
+                <span style={{ color:COLORS[m], fontSize:15 }}>←</span>
+              </button>
+            ))}
+            <div style={{ marginTop:10, padding:"11px 13px", background:"rgba(91,155,213,0.1)", border:"1px solid rgba(91,155,213,0.3)", borderRadius:12 }}>
+              <div style={{ fontSize:12, color:"#5b9bd5", fontWeight:700, marginBottom:3 }}>📅 TDA Summit XII</div>
+              <div style={{ fontSize:12, color:"#8090a0" }}>29-30 יוני 2026 • PokerGO Studio • לאס וגאס</div>
+            </div>
+          </div>
+        )}
+
+        {/* LEARN */}
+        {mode==="learn" && !activeChapter && (
+          <div>
+            <div style={{ fontSize:16, fontWeight:800, color:"#c8a96e", marginBottom:13 }}>בחר פרק</div>
+            {chapters.map(ch => (
+              <button key={ch.id} onClick={() => setActiveChapter(ch.id)} style={S.card(ch.color)}>
+                <span style={{ fontSize:22 }}>{ch.icon}</span>
+                <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14, color:ch.color }}>{ch.title}</div><div style={{ fontSize:12, color:"#6a6050", marginTop:2 }}>{ch.rules.length} כללים</div></div>
+                <span style={{ color:ch.color }}>←</span>
+              </button>
+            ))}
+          </div>
+        )}
+        {mode==="learn" && activeChapter && !activeRule && (() => {
+          const ch = chapters.find(c=>c.id===activeChapter);
+          return (
+            <div>
+              <button onClick={() => setActiveChapter(null)} style={S.back("#c8a96e")}>→ חזרה לפרקים</button>
+              <div style={{ fontSize:16, fontWeight:800, color:ch.color, marginBottom:13 }}>{ch.icon} {ch.title}</div>
+              {ch.rules.map(r => (
+                <button key={r.number} onClick={() => setActiveRule(r.number)} style={S.card(ch.color)}>
+                  <div style={S.badge(ch.color)}>{r.number}</div>
+                  <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14 }}>{r.title}</div><div style={{ fontSize:12, color:"#7a7060", marginTop:2 }}>{r.summary}</div></div>
+                  <span style={{ color:ch.color }}>←</span>
+                </button>
+              ))}
+            </div>
+          );
+        })()}
+        {mode==="learn" && activeChapter && activeRule && (() => {
+          const ch = chapters.find(c=>c.id===activeChapter);
+          const r = ch.rules.find(x=>x.number===activeRule);
+          const ri = ch.rules.indexOf(r);
+          return (
+            <div>
+              <button onClick={() => setActiveRule(null)} style={S.back(ch.color)}>→ חזרה לפרק</button>
+              <div style={S.fullCard(ch.color)}>
+                <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:11 }}>
+                  <div style={{ ...S.badge(ch.color), width:40, height:40, borderRadius:10, fontSize:15 }}>{r.number}</div>
+                  <div><div style={{ fontSize:16, fontWeight:800, color:ch.color }}>{r.title}</div><div style={{ fontSize:12, color:"#8a7a60" }}>{ch.title}</div></div>
+                </div>
+                <div style={{ background:"rgba(0,0,0,0.3)", borderRadius:11, padding:"13px", fontSize:13, lineHeight:1.9, whiteSpace:"pre-line", color:"#d4cabb" }}>{r.full}</div>
+              </div>
+              {r.tip && <div style={{ background:"rgba(200,169,110,0.1)", border:"1px solid rgba(200,169,110,0.35)", borderRadius:11, padding:"11px 13px", fontSize:13, lineHeight:1.7, color:"#d4b870", marginBottom:13 }}>{r.tip}</div>}
+              <div style={{ display:"flex", gap:8 }}>
+                <button onClick={() => setActiveRule(ch.rules[Math.max(0,ri-1)].number)} disabled={ri===0}
+                  style={{ flex:1, padding:"10px", borderRadius:11, border:"1px solid rgba(255,255,255,0.15)", background:ri===0?"rgba(255,255,255,0.03)":"rgba(255,255,255,0.07)", color:ri===0?"#4a4030":"#c8a96e", cursor:ri===0?"default":"pointer", fontWeight:600, fontSize:13 }}>→ הקודם</button>
+                <button onClick={() => { if(ri<ch.rules.length-1) setActiveRule(ch.rules[ri+1].number); else setActiveRule(null); }}
+                  style={{ flex:1, padding:"10px", borderRadius:11, border:"none", background:ch.color, color:"#0f0c1a", cursor:"pointer", fontWeight:700, fontSize:13 }}>
+                  {ri<ch.rules.length-1?"← הבא":"← סיום פרק"}
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* ADDENDUM */}
+        {mode==="addendum" && !activeAddendum && (
+          <div>
+            <div style={{ fontSize:16, fontWeight:800, color:"#5b9bd5", marginBottom:5 }}>🖼️ נספח דוגמאות</div>
+            <div style={{ fontSize:13, color:"#7a8090", marginBottom:13, lineHeight:1.6 }}>מצבים אמיתיים מה-Addendum הרשמי של TDA עם פתרון מפורט</div>
+            {addendumExamples.map((ex,i) => (
+              <button key={ex.id} onClick={() => setActiveAddendum(ex.id)}
+                style={{ background:"rgba(91,155,213,0.07)", border:"1px solid rgba(91,155,213,0.28)", borderRadius:13, padding:"12px 14px", display:"flex", alignItems:"flex-start", gap:10, cursor:"pointer", textAlign:"right", width:"100%", color:"#e8e0d0", marginBottom:8 }}>
+                <div style={{ minWidth:26, height:26, borderRadius:7, background:"rgba(91,155,213,0.25)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:800, color:"#5b9bd5", marginTop:1, flexShrink:0 }}>{i+1}</div>
+                <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:13, color:"#5b9bd5" }}>{ex.title}</div><div style={{ fontSize:11, color:"#6a7080", marginTop:2 }}>{ex.rule}</div><div style={{ fontSize:12, color:"#8a8a9a", marginTop:3, lineHeight:1.5 }}>{ex.scenario.substring(0,55)}…</div></div>
+                <span style={{ color:"#5b9bd5", marginTop:2 }}>←</span>
+              </button>
+            ))}
+          </div>
+        )}
+        {mode==="addendum" && activeAddendum && (() => {
+          const ex = addendumExamples.find(e=>e.id===activeAddendum);
+          const idx = addendumExamples.indexOf(ex);
+          return (
+            <div>
+              <button onClick={() => setActiveAddendum(null)} style={S.back("#5b9bd5")}>→ חזרה לנספח</button>
+              <div style={S.fullCard("#5b9bd5")}>
+                <div style={{ fontSize:10, letterSpacing:3, color:"#5b9bd5", marginBottom:5, fontWeight:600 }}>{ex.rule}</div>
+                <div style={{ fontSize:16, fontWeight:800, color:"#5b9bd5", marginBottom:13 }}>{ex.title}</div>
+                <div style={{ background:"rgba(0,0,0,0.35)", borderRadius:11, padding:"12px", marginBottom:12 }}>
+                  <div style={{ fontSize:12, color:"#8090a0", marginBottom:5, fontWeight:600 }}>📍 התרחיש:</div>
+                  <div style={{ fontSize:13, lineHeight:1.7, color:"#d4cabb" }}>{ex.scenario}</div>
+                </div>
+                <div style={{ background:"rgba(0,0,0,0.25)", borderRadius:11, padding:"12px", marginBottom:12 }}>
+                  <div style={{ fontSize:12, color:"#8090a0", marginBottom:7, fontWeight:600 }}>🔍 ניתוח שלב-אחר-שלב:</div>
+                  {ex.steps.map((s,i) => (
+                    <div key={i} style={{ display:"flex", gap:8, marginBottom:7, alignItems:"flex-start" }}>
+                      <span style={{ minWidth:19, height:19, borderRadius:5, background:"rgba(91,155,213,0.25)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:700, color:"#5b9bd5", marginTop:2, flexShrink:0 }}>{i+1}</span>
+                      <span style={{ fontSize:13, lineHeight:1.6, color:"#c4c0b0" }}>{s}</span>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ background:"rgba(91,155,213,0.15)", border:"1px solid rgba(91,155,213,0.4)", borderRadius:10, padding:"10px", marginBottom:10 }}>
+                  <div style={{ fontSize:14, fontWeight:700, color:"#7ab8e8" }}>{ex.result}</div>
+                </div>
+                {ex.note && <div style={{ background:"rgba(200,169,110,0.1)", border:"1px solid rgba(200,169,110,0.3)", borderRadius:10, padding:"10px 12px", fontSize:13, color:"#d4b870", lineHeight:1.6 }}>💡 {ex.note}</div>}
+              </div>
+              <div style={{ display:"flex", gap:8 }}>
+                <button onClick={() => setActiveAddendum(addendumExamples[Math.max(0,idx-1)].id)} disabled={idx===0}
+                  style={{ flex:1, padding:"10px", borderRadius:11, border:"1px solid rgba(255,255,255,0.15)", background:idx===0?"rgba(255,255,255,0.03)":"rgba(255,255,255,0.07)", color:idx===0?"#4a4030":"#5b9bd5", cursor:idx===0?"default":"pointer", fontWeight:600, fontSize:13 }}>→ הקודמת</button>
+                <button onClick={() => { if(idx<addendumExamples.length-1) setActiveAddendum(addendumExamples[idx+1].id); else setActiveAddendum(null); }}
+                  style={{ flex:1, padding:"10px", borderRadius:11, border:"none", background:"#5b9bd5", color:"#0f0c1a", cursor:"pointer", fontWeight:700, fontSize:13 }}>
+                  {idx<addendumExamples.length-1?"← הבאה":"← סיום נספח"}
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* SEARCH */}
+        {mode==="search" && (
+          <div>
+            <div style={{ fontSize:16, fontWeight:800, color:COLORS.search, marginBottom:13 }}>🔍 חיפוש כללים</div>
+            <div style={{ position:"relative", marginBottom:16 }}>
+              <input
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="חפש לפי מילת מפתח, מספר כלל..."
+                style={{ width:"100%", padding:"12px 44px 12px 16px", borderRadius:12, border:"1px solid rgba(95,196,184,0.4)", background:"rgba(95,196,184,0.08)", color:"#e8e0d0", fontSize:14, outline:"none", boxSizing:"border-box", direction:"rtl" }}
+                autoFocus
+              />
+              <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", fontSize:18, opacity:0.5 }}>🔍</span>
+            </div>
+            {searchQuery.trim().length > 1 && searchResults.length === 0 && (
+              <div style={{ textAlign:"center", color:"#7a7060", fontSize:14, padding:"30px 0" }}>לא נמצאו תוצאות לחיפוש "{searchQuery}"</div>
+            )}
+            {searchResults.map(r => (
+              <button key={`${r.chapterId}-${r.number}`}
+                onClick={() => { setActiveChapter(r.chapterId); setActiveRule(r.number); setMode("learn"); }}
+                style={{ ...S.card(r.chapterColor), marginBottom:8 }}>
+                <div style={S.badge(r.chapterColor)}>{r.number}</div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontWeight:700, fontSize:14, color:r.chapterColor }}>{r.title}</div>
+                  <div style={{ fontSize:11, color:"#6a6a70", marginTop:2 }}>{r.chapterTitle}</div>
+                  <div style={{ fontSize:12, color:"#9a9090", marginTop:3 }}>{r.summary}</div>
+                </div>
+                <span style={{ color:r.chapterColor }}>←</span>
+              </button>
+            ))}
+            {searchQuery.trim().length <= 1 && (
+              <div style={{ textAlign:"center", color:"#6a6060", fontSize:13, padding:"20px 0" }}>
+                <div style={{ fontSize:36, marginBottom:10 }}>🔍</div>
+                הקלד לפחות 2 תווים לחיפוש
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* SCENARIO / AI */}
+        {mode==="scenario" && (
+          <div style={{ display:"flex", flexDirection:"column", height:"calc(100vh - 160px)" }}>
+            <div style={{ fontSize:16, fontWeight:800, color:COLORS.scenario, marginBottom:5 }}>🤖 שאל AI – פסיקת TDA</div>
+            <div style={{ fontSize:13, color:"#7a7060", marginBottom:13, lineHeight:1.6 }}>תאר תרחיש מהשולחן ותקבל פסיקה לפי חוקי TDA 2024</div>
+
+            {/* chat */}
+            <div style={{ flex:1, overflowY:"auto", marginBottom:12, display:"flex", flexDirection:"column", gap:10 }}>
+              {chatHistory.length === 0 && (
+                <div style={{ textAlign:"center", padding:"30px 20px" }}>
+                  <div style={{ fontSize:40, marginBottom:12 }}>🃏</div>
+                  <div style={{ fontSize:14, color:"#7a7060", lineHeight:1.7 }}>
+                    לדוגמה:<br/>
+                    <span style={{ color:COLORS.scenario }}>"בליינדים 500/1,000. A הימר 3,000. B דחף צ'יפ של 5,000 בשקט. מה הפסיקה?"</span>
+                  </div>
+                </div>
+              )}
+              {chatHistory.map((msg, i) => (
+                <div key={i} style={{ display:"flex", justifyContent: msg.role==="user"?"flex-start":"flex-end" }}>
+                  <div style={{
+                    maxWidth:"85%",
+                    padding:"11px 14px",
+                    borderRadius: msg.role==="user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
+                    background: msg.role==="user" ? "rgba(224,160,80,0.15)" : "rgba(255,255,255,0.06)",
+                    border: msg.role==="user" ? "1px solid rgba(224,160,80,0.3)" : "1px solid rgba(255,255,255,0.1)",
+                    fontSize:13,
+                    lineHeight:1.7,
+                    whiteSpace:"pre-wrap",
+                    color: msg.role==="user" ? "#e8d090" : "#d4cabb",
+                    textAlign:"right",
+                  }}>
+                    {msg.content}
+                  </div>
+                </div>
+              ))}
+              {scenarioLoading && (
+                <div style={{ display:"flex", justifyContent:"flex-end" }}>
+                  <div style={{ padding:"11px 16px", borderRadius:"14px 14px 14px 4px", background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.1)", fontSize:13, color:"#8a8a9a" }}>
+                    ⏳ מנתח לפי חוקי TDA…
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+
+            {/* input */}
+            <div style={{ display:"flex", gap:8, alignItems:"flex-end" }}>
+              <textarea
+                value={scenario}
+                onChange={e => setScenario(e.target.value)}
+                onKeyDown={e => { if(e.key==="Enter" && !e.shiftKey) { e.preventDefault(); askScenario(); } }}
+                placeholder="תאר את התרחיש..."
+                rows={2}
+                style={{ flex:1, padding:"11px 14px", borderRadius:12, border:"1px solid rgba(224,160,80,0.4)", background:"rgba(224,160,80,0.08)", color:"#e8e0d0", fontSize:13, outline:"none", resize:"none", direction:"rtl", fontFamily:"inherit" }}
+              />
+              <button onClick={askScenario} disabled={!scenario.trim() || scenarioLoading}
+                style={{ padding:"11px 16px", borderRadius:12, border:"none", background: scenario.trim() && !scenarioLoading ? COLORS.scenario : "rgba(255,255,255,0.1)", color: scenario.trim() && !scenarioLoading ? "#0f0c1a":"#5a5050", fontWeight:800, fontSize:18, cursor: scenario.trim() && !scenarioLoading ?"pointer":"default", flexShrink:0 }}>
+                ←
+              </button>
+            </div>
+            {chatHistory.length > 0 && (
+              <button onClick={() => setChatHistory([])} style={{ marginTop:8, background:"none", border:"none", color:"#5a5050", fontSize:12, cursor:"pointer", textAlign:"center" }}>
+                🗑️ נקה שיחה
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* PRACTICE */}
+        {mode==="practice" && !pqDone && (
+          <div>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:13 }}>
+              <div style={{ fontSize:12, color:"#7a7060" }}>שאלה {pqIdx+1} / {practiceQuiz.length}</div>
+              <div style={{ fontSize:12, fontWeight:700, color:"#8b7cb8", background:"rgba(139,124,184,0.15)", padding:"3px 10px", borderRadius:20 }}>✅ {pqScore}</div>
+            </div>
+            <div style={{ height:3, background:"rgba(255,255,255,0.1)", borderRadius:2, marginBottom:16 }}>
+              <div style={{ height:"100%", borderRadius:2, background:"#8b7cb8", width:`${(pqIdx/practiceQuiz.length)*100}%`, transition:"width 0.3s" }} />
+            </div>
+            <div style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:14, padding:"15px", fontSize:15, fontWeight:700, lineHeight:1.6, marginBottom:15 }}>{practiceQuiz[pqIdx].q}</div>
+            <div>{practiceQuiz[pqIdx].options.map((opt,i) => {
+              const state = pqSel===null?"idle": i===practiceQuiz[pqIdx].answer?"correct": i===pqSel?"wrong":"idle";
+              return <button key={i} onClick={() => handlePQAnswer(i)} style={S.optBtn(state)}>{opt}</button>;
+            })}</div>
+            {pqSel!==null && (
+              <div>
+                <div style={{ background:pqSel===practiceQuiz[pqIdx].answer?"rgba(100,200,100,0.12)":"rgba(200,100,100,0.12)", border:`1px solid ${pqSel===practiceQuiz[pqIdx].answer?"rgba(100,200,100,0.4)":"rgba(200,100,100,0.4)"}`, borderRadius:11, padding:"11px 13px", fontSize:13, lineHeight:1.7, marginBottom:11, color:pqSel===practiceQuiz[pqIdx].answer?"#8de8a0":"#e89090" }}>
+                  {pqSel===practiceQuiz[pqIdx].answer?"✅ ":"❌ "}{practiceQuiz[pqIdx].exp}
+                </div>
+                <button onClick={nextPQ} style={{ width:"100%", padding:"12px", borderRadius:11, border:"none", background:"#8b7cb8", color:"#fff", fontWeight:800, fontSize:14, cursor:"pointer" }}>
+                  {pqIdx+1<practiceQuiz.length?"שאלה הבאה ←":"ראה תוצאות 🏆"}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+        {mode==="practice" && pqDone && (
+          <div style={{ textAlign:"center" }}>
+            <div style={{ fontSize:50, marginBottom:11 }}>{pqScore>=13?"🏆":pqScore>=10?"🥈":"📚"}</div>
+            <div style={{ fontSize:22, fontWeight:900, color:"#8b7cb8", marginBottom:5 }}>{pqScore}/{practiceQuiz.length}</div>
+            <div style={{ fontSize:14, color:"#8a7a60", marginBottom:20 }}>{pqScore===practiceQuiz.length?"מושלם!":pqScore>=11?"כמעט שם!":pqScore>=8?"טוב, כדאי לחזור":"המשך ללמוד!"}</div>
+            <div style={{ display:"grid", gap:8 }}>
+              <button onClick={resetPQ} style={{ padding:"12px", borderRadius:11, border:"none", background:"#8b7cb8", color:"#fff", fontWeight:800, fontSize:14, cursor:"pointer" }}>🔄 נסה שוב</button>
+              <button onClick={() => { goMode("exam"); resetCE(); }} style={{ padding:"12px", borderRadius:11, border:"1px solid rgba(224,123,106,0.5)", background:"transparent", color:"#e07b6a", fontWeight:700, fontSize:13, cursor:"pointer" }}>🏆 מבחן הסמכה</button>
+              <button onClick={() => goMode("learn")} style={{ padding:"12px", borderRadius:11, border:"1px solid rgba(200,169,110,0.4)", background:"transparent", color:"#c8a96e", fontWeight:700, fontSize:13, cursor:"pointer" }}>📖 חזור ללימוד</button>
+            </div>
+          </div>
+        )}
+
+        {/* EXAM */}
+        {mode==="exam" && !ceDone && (
+          <div>
+            <div style={{ background:"rgba(224,123,106,0.1)", border:"1px solid rgba(224,123,106,0.3)", borderRadius:11, padding:"9px 13px", marginBottom:13, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+              <div style={{ fontSize:12, color:"#e07b6a", fontWeight:700 }}>🏆 מבחן הסמכה TDA</div>
+              <div style={{ fontSize:11, color:"#7a6050" }}>נדרש 90%</div>
+            </div>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
+              <div style={{ fontSize:12, color:"#7a7060" }}>שאלה {ceIdx+1} / {certExam.length}</div>
+              <div style={{ fontSize:11, color:"#6a7080", background:"rgba(224,123,106,0.12)", padding:"3px 9px", borderRadius:20 }}>{certExam[ceIdx].rule}</div>
+            </div>
+            <div style={{ height:3, background:"rgba(255,255,255,0.1)", borderRadius:2, marginBottom:15 }}>
+              <div style={{ height:"100%", borderRadius:2, background:"#e07b6a", width:`${(ceIdx/certExam.length)*100}%`, transition:"width 0.3s" }} />
+            </div>
+            <div style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:13, padding:"14px", fontSize:14, fontWeight:700, lineHeight:1.6, marginBottom:13 }}>{certExam[ceIdx].q}</div>
+            <div>{certExam[ceIdx].options.map((opt,i) => {
+              const state = ceSel===null?"idle": i===certExam[ceIdx].answer?"correct": i===ceSel?"wrong":"idle";
+              return <button key={i} onClick={() => handleCEAnswer(i)} style={S.optBtn(state)}>{opt}</button>;
+            })}</div>
+            {ceSel!==null && (
+              <button onClick={nextCE} style={{ width:"100%", marginTop:5, padding:"12px", borderRadius:11, border:"none", background:"#e07b6a", color:"#fff", fontWeight:800, fontSize:14, cursor:"pointer" }}>
+                {ceIdx+1<certExam.length?"שאלה הבאה ←":"סיים מבחן 🏁"}
+              </button>
+            )}
+          </div>
+        )}
+        {mode==="exam" && ceDone && !ceReview && (
+          <div style={{ textAlign:"center" }}>
+            <div style={{ fontSize:50, marginBottom:11 }}>{passed?"🏆":"📚"}</div>
+            <div style={{ fontSize:24, fontWeight:900, color:passed?"#c8a96e":"#e07b6a", marginBottom:5 }}>{ceScore}/40 • {cePct}%</div>
+            <div style={{ fontSize:15, color:passed?"#8de8a0":"#e89090", fontWeight:700, marginBottom:5 }}>{passed?"✅ עברת! מוסמך TDA":"❌ לא עברת – נדרש 90%"}</div>
+            <div style={{ fontSize:13, color:"#7a7060", marginBottom:20 }}>{passed?"ניתן להגיש ב-pokertda.com":"חזור על הנושאים שטעית ונסה שוב."}</div>
+            <div style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:13, padding:"13px", marginBottom:15, textAlign:"right" }}>
+              <div style={{ fontSize:13, fontWeight:700, color:"#c8a96e", marginBottom:9 }}>ניתוח תוצאות</div>
+              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}><span style={{ fontSize:13, color:"#8de8a0" }}>✅ נכונות</span><span style={{ fontSize:13, fontWeight:700, color:"#8de8a0" }}>{ceScore}</span></div>
+              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}><span style={{ fontSize:13, color:"#e88080" }}>❌ שגויות</span><span style={{ fontSize:13, fontWeight:700, color:"#e88080" }}>{40-ceScore}</span></div>
+              <div style={{ display:"flex", justifyContent:"space-between" }}><span style={{ fontSize:13, color:"#c8a96e" }}>📊 ציון</span><span style={{ fontSize:13, fontWeight:700, color:passed?"#8de8a0":"#e88080" }}>{cePct}% {passed?"✅":"❌"}</span></div>
+            </div>
+            <div style={{ display:"grid", gap:8 }}>
+              <button onClick={() => setCeReview(true)} style={{ padding:"12px", borderRadius:11, border:"1px solid rgba(91,155,213,0.5)", background:"rgba(91,155,213,0.1)", color:"#5b9bd5", fontWeight:700, fontSize:13, cursor:"pointer" }}>🔍 בדוק תשובות</button>
+              <button onClick={resetCE} style={{ padding:"12px", borderRadius:11, border:"none", background:"#e07b6a", color:"#fff", fontWeight:800, fontSize:14, cursor:"pointer" }}>🔄 נסה שוב</button>
+              <button onClick={() => goMode("learn")} style={{ padding:"12px", borderRadius:11, border:"1px solid rgba(200,169,110,0.4)", background:"transparent", color:"#c8a96e", fontWeight:700, fontSize:13, cursor:"pointer" }}>📖 חזור ללימוד</button>
+            </div>
+          </div>
+        )}
+        {mode==="exam" && ceDone && ceReview && (
+          <div>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:13 }}>
+              <button onClick={() => setCeReview(false)} style={S.back("#5b9bd5")}>→ חזרה לתוצאות</button>
+              <div style={{ fontSize:12, color:passed?"#8de8a0":"#e88080", fontWeight:700 }}>{ceScore}/40 • {cePct}%</div>
+            </div>
+            {certExam.map((q,i) => {
+              const ans = ceAnswers[i];
+              if(!ans) return null;
+              return (
+                <div key={i} style={{ background:ans.correct?"rgba(100,200,100,0.07)":"rgba(200,80,80,0.07)", border:`1px solid ${ans.correct?"rgba(100,200,100,0.22)":"rgba(200,80,80,0.22)"}`, borderRadius:11, padding:"10px 13px", marginBottom:7 }}>
+                  <div style={{ display:"flex", gap:7, alignItems:"flex-start", marginBottom:ans.correct?0:6 }}>
+                    <span style={{ fontSize:13, marginTop:1 }}>{ans.correct?"✅":"❌"}</span>
+                    <div style={{ fontSize:13, fontWeight:600, lineHeight:1.5, color:"#d4cabb" }}>{q.q}</div>
+                  </div>
+                  {!ans.correct && <div style={{ fontSize:12, color:"#5b9bd5", paddingRight:20 }}>תשובה נכונה: <strong>{q.options[q.answer]}</strong> <span style={{ color:"#6a7080" }}>({q.rule})</span></div>}
+                </div>
+              );
+            })}
+            <button onClick={() => setCeReview(false)} style={{ width:"100%", marginTop:8, padding:"12px", borderRadius:11, border:"none", background:"#e07b6a", color:"#fff", fontWeight:700, fontSize:13, cursor:"pointer" }}>← חזרה לתוצאות</button>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
