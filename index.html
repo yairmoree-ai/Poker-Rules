@@ -437,12 +437,17 @@ function App() {
 
   const resetPQ = () => { setPqIdx(0); setPqSel(null); setPqScore(0); setPqDone(false); };
   const [certExam, setCertExam] = useState(() => buildExam());
+  const [examStarted, setExamStarted] = useState(false);
+  const [examRegName, setExamRegName] = useState("");
+  const [examRegPhone, setExamRegPhone] = useState("");
+  const [examRegEmail, setExamRegEmail] = useState("");
+  const [examRegError, setExamRegError] = useState("");
   const [examName, setExamName] = useState("");
   const [showNameInput, setShowNameInput] = useState(false);
   const [examResults, setExamResults] = useState(() => {
     try { return JSON.parse(localStorage.getItem("tdaResults") || "[]"); } catch(e){ return []; }
   });
-  const resetCE = () => { setCertExam(buildExam()); setCeIdx(0); setCeSel(null); setCeAnswers([]); setCeDone(false); setCeReview(false); };
+  const resetCE = () => { setCertExam(buildExam()); setCeIdx(0); setCeSel(null); setCeAnswers([]); setCeDone(false); setCeReview(false); setExamStarted(false); setExamRegError(""); };
   const goMode = (m) => { setMode(m); setActiveChapter(null); setActiveRule(null); setActiveAddendum(null); };
 
   const handlePQAnswer = (i) => {
@@ -455,19 +460,37 @@ function App() {
   const nextCE = () => {
     const updated = [...ceAnswers, { sel:ceSel, correct: ceSel===certExam[ceIdx].answer }];
     setCeAnswers(updated);
-    if (ceIdx+1 < certExam.length) { setCeIdx(c=>c+1); setCeSel(null); } else { setCeDone(true); setShowNameInput(true); }
+    if (ceIdx+1 < certExam.length) { setCeIdx(c=>c+1); setCeSel(null); } else {
+      const finalAnswers = updated;
+      // save immediately using current registration data
+      const sc2 = finalAnswers.filter(a=>a.correct).length;
+      const wrongQs2 = certExam.filter((_,i)=>finalAnswers[i]&&!finalAnswers[i].correct).map(q=>q.q.substring(0,40)+(q.q.length>40?"...":""));
+      const res2 = { name:examRegName||"אנונימי", phone:examRegPhone||"", email:examRegEmail||"", score:sc2, total:40, pct:Math.round((sc2/40)*100), passed:Math.round((sc2/40)*100)>=90, date:new Date().toLocaleDateString("he-IL"), wrongQuestions:wrongQs2 };
+      const upd2 = [res2, ...examResults].slice(0,20);
+      setExamResults(upd2);
+      try { localStorage.setItem("tdaResults", JSON.stringify(upd2)); } catch(e){}
+      setCeDone(true);
+    }
   };
 
   const ceScore = ceAnswers.filter(a=>a.correct).length;
 
   const saveResult = (name) => {
+    const answers = ceAnswers;
+    const sc = answers.filter(a=>a.correct).length;
+    const wrongQs = certExam
+      .filter((_,i) => answers[i] && !answers[i].correct)
+      .map(q => q.q.substring(0,40) + (q.q.length>40?"...":""));
     const result = {
-      name: name || "אנונימי",
-      score: ceAnswers.filter(a=>a.correct).length,
+      name: examRegName || name || "אנונימי",
+      phone: examRegPhone || "",
+      email: examRegEmail || "",
+      score: sc,
       total: 40,
-      pct: Math.round((ceAnswers.filter(a=>a.correct).length/40)*100),
-      passed: Math.round((ceAnswers.filter(a=>a.correct).length/40)*100) >= 90,
+      pct: Math.round((sc/40)*100),
+      passed: Math.round((sc/40)*100) >= 90,
       date: new Date().toLocaleDateString("he-IL"),
+      wrongQuestions: wrongQs,
     };
     const updated = [result, ...examResults].slice(0, 20);
     setExamResults(updated);
@@ -550,6 +573,35 @@ function App() {
     }, 500);
   };
   const cePct = ceDone ? Math.round((ceScore/certExam.length)*100) : 0;
+  const exportToExcel = () => {
+    const results = examResults;
+    if (!results.length) return;
+
+    // Build CSV with BOM for Hebrew Excel support
+    const BOM = "\uFEFF";
+    const headers = ["שם","טלפון","אימייל","ציון (%)","נכונות","שגויות","עבר/נכשל","תאריך","שאלות שטעה בהן"];
+    const rows = results.map(r => {
+      const wrong = (r.wrongQuestions || []).join(" | ");
+      return [
+        r.name || "",
+        r.phone || "",
+        r.email || "",
+        r.pct || "",
+        r.score || "",
+        (r.total||40) - (r.score||0),
+        r.passed ? "עבר" : "נכשל",
+        r.date || "",
+        wrong,
+      ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(",");
+    });
+    const csv = BOM + headers.map(h=>`"${h}"`).join(",") + "\n" + rows.join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "TDA_תוצאות.csv"; a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const passed = cePct >= 90;
 
   // search filter
@@ -691,7 +743,7 @@ function App() {
               ["🏆","מבחן הסמכה","40 שאלות – נדרש 90% כמו TDA האמיתי","exam"],
               ["🤖","שאל AI","הזן תרחיש וקבל פסיקה לפי TDA","scenario"],
             ].map(([ic,title,desc,m]) => (
-              <button key={m} onClick={() => { goMode(m); if(m==="practice") resetPQ(); if(m==="exam") resetCE(); }}
+              <button key={m} onClick={() => { goMode(m); if(m==="practice") resetPQ(); if(m==="exam"){ resetCE(); } }}
                 style={{ ...S.card(COLORS[m]), justifyContent:"flex-start" }}>
                 <span style={{ fontSize:22 }}>{ic}</span>
                 <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14, color:COLORS[m] }}>{title}</div><div style={{ fontSize:12, color:T.text2, marginTop:2 }}>{desc}</div></div>
@@ -987,10 +1039,53 @@ function App() {
         )}
 
         {/* EXAM */}
-        {mode==="exam" && !ceDone && (
+        {mode==="exam" && !ceDone && !examStarted && (
+          <div style={{ textAlign:"center" }}>
+            <div style={{ fontSize:44, marginBottom:10 }}>🏆</div>
+            <div style={{ fontSize:20, fontWeight:900, color:"#e07b6a", marginBottom:4 }}>מבחן הסמכה TDA</div>
+            <div style={{ fontSize:13, color:T.text2, marginBottom:20 }}>40 שאלות אקראיות • נדרש 90% לעבור</div>
+            <div style={{ background:T.bgCard, border:`1px solid rgba(224,123,106,0.3)`, borderRadius:14, padding:"18px", marginBottom:16, textAlign:"right" }}>
+              <div style={{ fontSize:14, fontWeight:700, color:"#e07b6a", marginBottom:14 }}>📋 פרטי הנבחן</div>
+              <div style={{ marginBottom:10 }}>
+                <div style={{ fontSize:12, color:T.text2, marginBottom:5 }}>שם מלא *</div>
+                <input type="text" value={examRegName} onChange={e=>setExamRegName(e.target.value)}
+                  placeholder="ישראל ישראלי"
+                  style={{ width:"100%", padding:"10px 12px", borderRadius:9, border:`1px solid ${examRegError&&!examRegName.trim()?"#e07b6a":T.border}`, background:T.bg, color:T.text, fontSize:14, outline:"none", fontFamily:"inherit", boxSizing:"border-box", textAlign:"right" }} />
+              </div>
+              <div style={{ marginBottom:10 }}>
+                <div style={{ fontSize:12, color:T.text2, marginBottom:5 }}>טלפון *</div>
+                <input type="tel" value={examRegPhone} onChange={e=>setExamRegPhone(e.target.value)}
+                  placeholder="050-0000000"
+                  style={{ width:"100%", padding:"10px 12px", borderRadius:9, border:`1px solid ${examRegError&&!examRegPhone.trim()?"#e07b6a":T.border}`, background:T.bg, color:T.text, fontSize:14, outline:"none", fontFamily:"inherit", boxSizing:"border-box", textAlign:"right" }} />
+              </div>
+              <div style={{ marginBottom:4 }}>
+                <div style={{ fontSize:12, color:T.text2, marginBottom:5 }}>אימייל *</div>
+                <input type="email" value={examRegEmail} onChange={e=>setExamRegEmail(e.target.value)}
+                  placeholder="israel@example.com"
+                  style={{ width:"100%", padding:"10px 12px", borderRadius:9, border:`1px solid ${examRegError&&!examRegEmail.trim()?"#e07b6a":T.border}`, background:T.bg, color:T.text, fontSize:14, outline:"none", fontFamily:"inherit", boxSizing:"border-box", textAlign:"left" }} />
+              </div>
+              {examRegError && <div style={{ fontSize:12, color:"#e07b6a", marginTop:8 }}>{examRegError}</div>}
+            </div>
+            <button onClick={() => {
+              if(!examRegName.trim()||!examRegPhone.trim()||!examRegEmail.trim()){
+                setExamRegError("יש למלא את כל השדות"); return;
+              }
+              if(!/\S+@\S+\.\S+/.test(examRegEmail)){
+                setExamRegError("כתובת אימייל לא תקינה"); return;
+              }
+              setExamRegError("");
+              setExamName(examRegName.trim());
+              setExamStarted(true);
+            }} style={{ width:"100%", padding:"14px", borderRadius:11, border:"none", background:"#e07b6a", color:"#fff", fontWeight:800, fontSize:16, cursor:"pointer", marginBottom:10 }}>
+              התחל מבחן ←
+            </button>
+            <div style={{ fontSize:11, color:T.textMuted }}>הפרטים נשמרים מקומית בלבד</div>
+          </div>
+        )}
+        {mode==="exam" && !ceDone && examStarted && (
           <div>
             <div style={{ background:"rgba(224,123,106,0.1)", border:"1px solid rgba(224,123,106,0.3)", borderRadius:11, padding:"9px 13px", marginBottom:13, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-              <div style={{ fontSize:12, color:"#e07b6a", fontWeight:700 }}>🏆 מבחן הסמכה TDA</div>
+              <div style={{ fontSize:12, color:"#e07b6a", fontWeight:700 }}>🏆 {examRegName}</div>
               <div style={{ fontSize:11, color:"#7a6050" }}>נדרש 90%</div>
             </div>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
@@ -1021,32 +1116,10 @@ function App() {
             <div style={{ fontSize:15, color:passed?"#8de8a0":"#e89090", fontWeight:700, marginBottom:5 }}>{passed?"✅ עברת! מוסמך TDA":"❌ לא עברת – נדרש 90%"}</div>
             <div style={{ fontSize:13, color:T.text2, marginBottom:16 }}>{passed?"ניתן להגיש ב-pokertda.com":"חזור על הנושאים שטעית ונסה שוב."}</div>
 
-            {showNameInput && (
-              <div style={{ background:T.bgCard, border:`1px solid rgba(200,169,110,0.3)`, borderRadius:13, padding:"14px", marginBottom:14, textAlign:"right" }}>
-                <div style={{ fontSize:13, fontWeight:700, color:"#c8a96e", marginBottom:8 }}>💾 שמור תוצאה</div>
-                <div style={{ display:"flex", gap:8 }}>
-                  <input
-                    type="text" placeholder="שם הנבחן..." value={examName}
-                    onChange={e => setExamName(e.target.value)}
-                    onKeyDown={e => { if(e.key==="Enter" && examName.trim()){ const r=saveResult(examName); setShowNameInput(false); shareResult(r); }}}
-                    style={{ flex:1, padding:"9px 12px", borderRadius:9, border:`1px solid rgba(200,169,110,0.4)`, background:T.bg, color:T.text, fontSize:14, outline:"none", textAlign:"right", fontFamily:"inherit" }}
-                    autoFocus
-                  />
-                  <button onClick={() => { if(examName.trim()){ const r=saveResult(examName); setShowNameInput(false); shareResult(r); }}}
-                    style={{ padding:"9px 14px", borderRadius:9, border:"none", background:"#c8a96e", color:"#0f0c1a", fontWeight:800, fontSize:13, cursor:"pointer" }}>
-                    שתף 📤
-                  </button>
-                </div>
-                <div style={{ fontSize:11, color:T.textMuted, marginTop:6 }}>התמונה תורד + תפתח וואטסאפ</div>
-              </div>
-            )}
-
-            {!showNameInput && examResults.length > 0 && (
-              <button onClick={() => shareResult(examResults[0])}
-                style={{ width:"100%", padding:"11px", borderRadius:11, border:"none", background:"#25D366", color:"#fff", fontWeight:800, fontSize:14, cursor:"pointer", marginBottom:10, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-                📤 שתף בוואטסאפ
-              </button>
-            )}
+            <button onClick={() => shareResult(examResults[0])}
+              style={{ width:"100%", padding:"11px", borderRadius:11, border:"none", background:"#25D366", color:"#fff", fontWeight:800, fontSize:14, cursor:"pointer", marginBottom:10, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+              📤 שתף בוואטסאפ
+            </button>
 
             <div style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:13, padding:"13px", marginBottom:15, textAlign:"right" }}>
               <div style={{ fontSize:13, fontWeight:700, color:"#c8a96e", marginBottom:9 }}>ניתוח תוצאות</div>
@@ -1055,13 +1128,21 @@ function App() {
               <div style={{ display:"flex", justifyContent:"space-between" }}><span style={{ fontSize:13, color:"#c8a96e" }}>📊 ציון</span><span style={{ fontSize:13, fontWeight:700, color:passed?"#8de8a0":"#e88080" }}>{cePct}% {passed?"✅":"❌"}</span></div>
             </div>
 
-            {examResults.length > 1 && (
+            {examResults.length > 0 && (
               <div style={{ background:"rgba(255,255,255,0.03)", border:`1px solid ${T.border}`, borderRadius:13, padding:"13px", marginBottom:15, textAlign:"right" }}>
-                <div style={{ fontSize:13, fontWeight:700, color:"#c8a96e", marginBottom:9 }}>📋 היסטוריה</div>
-                {examResults.slice(0,5).map((r,i) => (
-                  <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"5px 0", borderBottom: i<Math.min(examResults.length,5)-1 ? `1px solid ${T.border}` : "none" }}>
-                    <span style={{ fontSize:12, color:T.text2 }}>{r.name} • {r.date}</span>
-                    <span style={{ fontSize:12, fontWeight:700, color: r.passed?"#8de8a0":"#e88080" }}>{r.pct}% {r.passed?"✅":"❌"}</span>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:9 }}>
+                  <button onClick={exportToExcel} style={{ fontSize:11, padding:"4px 10px", borderRadius:7, border:"1px solid rgba(100,200,100,0.4)", background:"rgba(100,200,100,0.1)", color:"#6dc86d", cursor:"pointer", fontWeight:700 }}>
+                    📊 ייצוא לאקסל
+                  </button>
+                  <div style={{ fontSize:13, fontWeight:700, color:"#c8a96e" }}>📋 היסטוריה ({examResults.length})</div>
+                </div>
+                {examResults.slice(0,8).map((r,i) => (
+                  <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"6px 0", borderBottom: i<Math.min(examResults.length,8)-1 ? `1px solid ${T.border}` : "none" }}>
+                    <div>
+                      <div style={{ fontSize:12, color:T.text, fontWeight:600 }}>{r.name}</div>
+                      <div style={{ fontSize:11, color:T.textMuted }}>{r.date} • {r.email||r.phone||""}</div>
+                    </div>
+                    <span style={{ fontSize:13, fontWeight:700, color: r.passed?"#8de8a0":"#e88080" }}>{r.pct}% {r.passed?"✅":"❌"}</span>
                   </div>
                 ))}
               </div>
