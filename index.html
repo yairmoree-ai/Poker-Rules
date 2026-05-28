@@ -1,4 +1,28 @@
-import { useState, useRef } from "react";
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TDA חוקים">
+<title>חוקי טורניר פוקר TDA 2024</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f0c1a; color: #e8e0d0; font-family: 'Segoe UI', 'Arial Hebrew', Arial, sans-serif; direction: rtl; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(200,169,110,0.3); border-radius: 2px; }
+  textarea, input { font-family: inherit; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useRef } = React;
 
 const chapters = [
   {
@@ -240,7 +264,7 @@ const TDA_SYSTEM_PROMPT = `אתה מומחה לחוקי TDA (Tournament Director
 
 אל תמציא חוקים שאינם קיימים. אם אינך בטוח, אמור זאת.`;
 
-export default function App() {
+function App() {
   const [mode, setMode] = useState("home");
   const [activeChapter, setActiveChapter] = useState(null);
   const [activeRule, setActiveRule] = useState(null);
@@ -749,3 +773,10 @@ export default function App() {
     </div>
   );
 }
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
