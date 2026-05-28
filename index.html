@@ -6,10 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TDA חוקים">
+<link rel="apple-touch-icon" href="https://fav.farm/🃏">
 <title>חוקי טורניר פוקר TDA 2024</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #0f0c1a; color: #e8e0d0; font-family: 'Segoe UI', 'Arial Hebrew', Arial, sans-serif; direction: rtl; }
@@ -17,11 +15,23 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(200,169,110,0.3); border-radius: 2px; }
   textarea, input { font-family: inherit; }
+  #root { min-height: 100vh; }
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
+<div id="root"><div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#c8a96e;font-size:16px;direction:rtl">🃏 טוען...</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script>
+// Suppress the in-browser babel warning
+const _warn = console.warn;
+console.warn = (...args) => {
+  if(args[0] && args[0].includes('Babel')) return;
+  _warn.apply(console, args);
+};
+</script>
+<script type="text/babel" data-presets="react">
 const { useState, useRef } = React;
 
 const chapters = [
@@ -141,9 +151,9 @@ const chapters = [
 const addendumExamples = [
   { id:"a1", rule:"כלל 43", title:"RAISE מינימלי",
     scenario:"NLHE. בליינדים 100/200. שחקן A פותח ב-600. מה RAISE המינימלי של B?",
-    steps:["ה-bet של A = 600","RAISE מינימלי = 600 + 600 = 1,200","B חייב להעלות לפחות ל-1,200"],
-    result:"✅ RAISE מינימלי = 1,200 סך הכל",
-    note:"הRAISE שווה ל-bet הגדול ביותר בסיבוב, לא לגודל ה-raise בלבד." },
+    steps:["BB = 200","A פתח ל-600 → גודל ה-raise של A = 600 - 200 = 400","RAISE מינימלי של B = 600 + 400 = 1,000","B חייב להעלות לפחות ל-1,000"],
+    result:"✅ RAISE מינימלי = 1,000 סך הכל",
+    note:"גודל ה-raise = ההפרש בין הפתיחה לבליינד הגדול. בפרה-פלופ: A פתח 600, BB היה 200, אז raise = 400. B צריך לפחות 600+400=1,000." },
   { id:"a2", rule:"כלל 43 – 50%", title:"RAISE חלקי",
     scenario:"NLHE. A מהמר 1,000. B דוחף 1,400 בשקט (ללא הכרזה). מה הפסיקה?",
     steps:["ה-bet = 1,000","RAISE מינימלי = 2,000","B דחף 1,400 = 40% מעל ה-1,000","פחות מ-50% ← CALL בלבד","אם B הכריז 'RAISE' לפני – חייב להשלים ל-2,000"],
@@ -776,7 +786,7 @@ function App() {
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+root.render(React.createElement(App));
 </script>
 </body>
 </html>
