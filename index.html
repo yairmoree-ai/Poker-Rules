@@ -459,9 +459,9 @@ function App() {
               ["📖","לימוד חוקים","6 פרקים, 25+ כללים בעברית","learn"],
               ["🖼️","נספח דוגמאות","8 מצבים אמיתיים עם פתרונות","addendum"],
               ["🔍","חיפוש","חפש כל כלל לפי מילת מפתח","search"],
-              ["🤖","שאל AI","הזן תרחיש וקבל פסיקה לפי TDA","scenario"],
               ["🎯","תרגול","15 שאלות על הכללים החשובים","practice"],
               ["🏆","מבחן הסמכה","40 שאלות – נדרש 90% כמו TDA האמיתי","exam"],
+              ["🤖","שאל AI","הזן תרחיש וקבל פסיקה לפי TDA","scenario"],
             ].map(([ic,title,desc,m]) => (
               <button key={m} onClick={() => { goMode(m); if(m==="practice") resetPQ(); if(m==="exam") resetCE(); }}
                 style={{ ...S.card(COLORS[m]), justifyContent:"flex-start" }}>
@@ -499,7 +499,7 @@ function App() {
               {ch.rules.map(r => (
                 <button key={r.number} onClick={() => setActiveRule(r.number)} style={S.card(ch.color)}>
                   <div style={S.badge(ch.color)}>{r.number}</div>
-                  <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14 }}>{r.title}</div><div style={{ fontSize:12, color:T.text2, marginTop:2 }}>{r.summary}</div></div>
+                  <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14, color:T.text }}>{r.title}</div><div style={{ fontSize:12, color:T.text2, marginTop:2 }}>{r.summary}</div></div>
                   <span style={{ color:ch.color }}>←</span>
                 </button>
               ))}
@@ -518,9 +518,9 @@ function App() {
                   <div style={{ ...S.badge(ch.color), width:40, height:40, borderRadius:10, fontSize:15 }}>{r.number}</div>
                   <div><div style={{ fontSize:16, fontWeight:800, color:ch.color }}>{r.title}</div><div style={{ fontSize:12, color:T.text2 }}>{ch.title}</div></div>
                 </div>
-                <div style={{ background:"rgba(0,0,0,0.3)", borderRadius:11, padding:"13px", fontSize:15, lineHeight:1.9, whiteSpace:"pre-line", color:"#2d2520" }}>{r.full}</div>
+                <div style={{ background:T.ruleBg, borderRadius:11, padding:"13px", fontSize:15, lineHeight:1.9, whiteSpace:"pre-line", color:T.text }}>{r.full}</div>
               </div>
-              {r.tip && <div style={{ background:"rgba(200,169,110,0.1)", border:"1px solid rgba(200,169,110,0.35)", borderRadius:11, padding:"11px 13px", fontSize:15, lineHeight:1.7, color:"#8a6a20", marginBottom:13 }}>{r.tip}</div>}
+              {r.tip && <div style={{ background:"rgba(200,169,110,0.1)", border:"1px solid rgba(200,169,110,0.35)", borderRadius:11, padding:"11px 13px", fontSize:15, lineHeight:1.7, color:T.tipText, marginBottom:13 }}>{r.tip}</div>}
               <div style={{ display:"flex", gap:8 }}>
                 <button onClick={() => setActiveRule(ch.rules[Math.max(0,ri-1)].number)} disabled={ri===0}
                   style={{ flex:1, padding:"10px", borderRadius:11, border:"1px solid rgba(255,255,255,0.15)", background:ri===0?T.navPrevBg:"rgba(200,169,110,0.1)", color:ri===0?T.navPrevCol:"#c8a96e", cursor:ri===0?"default":"pointer", fontWeight:600, fontSize:13 }}>→ הקודם</button>
@@ -540,7 +540,7 @@ function App() {
             <div style={{ fontSize:13, color:T.textMuted, marginBottom:13, lineHeight:1.6 }}>מצבים אמיתיים מה-Addendum הרשמי של TDA עם פתרון מפורט</div>
             {addendumExamples.map((ex,i) => (
               <button key={ex.id} onClick={() => setActiveAddendum(ex.id)}
-                style={{ background:T.bgCard, border:"1px solid rgba(91,155,213,0.3)", boxShadow:T.shadow, borderRadius:13, padding:"12px 14px", display:"flex", alignItems:"flex-start", gap:10, cursor:"pointer", textAlign:"right", width:"100%", color:"#1c1814", marginBottom:8 }}>
+                style={{ background:T.bgCard, border:"1px solid rgba(91,155,213,0.3)", boxShadow:T.shadow, borderRadius:13, padding:"12px 14px", display:"flex", alignItems:"flex-start", gap:10, cursor:"pointer", textAlign:"right", width:"100%", color:T.text, marginBottom:8 }}>
                 <div style={{ minWidth:26, height:26, borderRadius:7, background:"rgba(91,155,213,0.25)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:800, color:"#5b9bd5", marginTop:1, flexShrink:0 }}>{i+1}</div>
                 <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:13, color:"#5b9bd5" }}>{ex.title}</div><div style={{ fontSize:11, color:T.textMuted, marginTop:2 }}>{ex.rule}</div><div style={{ fontSize:12, color:T.textMuted, marginTop:3, lineHeight:1.5 }}>{ex.scenario.substring(0,55)}…</div></div>
                 <span style={{ color:"#5b9bd5", marginTop:2 }}>←</span>
@@ -557,9 +557,9 @@ function App() {
               <div style={S.fullCard("#5b9bd5")}>
                 <div style={{ fontSize:10, letterSpacing:3, color:"#5b9bd5", marginBottom:5, fontWeight:600 }}>{ex.rule}</div>
                 <div style={{ fontSize:16, fontWeight:800, color:"#5b9bd5", marginBottom:13 }}>{ex.title}</div>
-                <div style={{ background:"rgba(0,0,0,0.06)", borderRadius:11, padding:"12px", marginBottom:12 }}>
+                <div style={{ background:T.ruleBg, borderRadius:11, padding:"12px", marginBottom:12 }}>
                   <div style={{ fontSize:12, color:T.textMuted, marginBottom:5, fontWeight:600 }}>📍 התרחיש:</div>
-                  <div style={{ fontSize:15, lineHeight:1.7, color:"#2d2520" }}>{ex.scenario}</div>
+                  <div style={{ fontSize:15, lineHeight:1.7, color:T.text }}>{ex.scenario}</div>
                 </div>
                 <div style={{ background:"rgba(0,0,0,0.05)", borderRadius:11, padding:"12px", marginBottom:12 }}>
                   <div style={{ fontSize:12, color:T.textMuted, marginBottom:7, fontWeight:600 }}>🔍 ניתוח שלב-אחר-שלב:</div>
@@ -596,7 +596,7 @@ function App() {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="חפש לפי מילת מפתח, מספר כלל..."
-                style={{ width:"100%", padding:"12px 44px 12px 16px", borderRadius:12, border:"1px solid rgba(95,196,184,0.4)", background:"rgba(255,255,255,0.9)", color:"#1a1410", fontSize:14, outline:"none", boxSizing:"border-box", direction:"rtl" }}
+                style={{ width:"100%", padding:"12px 44px 12px 16px", borderRadius:12, border:"1px solid rgba(95,196,184,0.4)", background:"rgba(255,255,255,0.9)", color:T.text, fontSize:14, outline:"none", boxSizing:"border-box", direction:"rtl" }}
                 autoFocus
               />
               <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", fontSize:18, opacity:0.5 }}>🔍</span>
@@ -671,12 +671,12 @@ function App() {
                     maxWidth:"85%",
                     padding:"11px 14px",
                     borderRadius: msg.role==="user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
-                    background: msg.role==="user" ? "rgba(200,169,110,0.2)" : "rgba(255,255,255,0.85)",
-                    border: msg.role==="user" ? "1px solid rgba(200,169,110,0.4)" : "1px solid rgba(0,0,0,0.1)",
+                    background: msg.role==="user" ? "rgba(200,169,110,0.2)" : (dark?"rgba(255,255,255,0.1)":"rgba(255,255,255,0.85)"),
+                    border: msg.role==="user" ? "1px solid rgba(200,169,110,0.4)" : (dark?"1px solid rgba(255,255,255,0.12)":"1px solid rgba(0,0,0,0.1)"),
                     fontSize:13,
                     lineHeight:1.7,
                     whiteSpace:"pre-wrap",
-                    color: msg.role==="user" ? "#5a3c00" : "#1a1410",
+                    color: msg.role==="user" ? (dark?"#e8c87a":"#5a3c00") : (dark?"#e8e4dc":"#1a1410"),
                     textAlign:"right",
                   }}>
                     {msg.content}
@@ -701,7 +701,7 @@ function App() {
                 onKeyDown={e => { if(e.key==="Enter" && !e.shiftKey) { e.preventDefault(); askScenario(); } }}
                 placeholder="תאר את התרחיש..."
                 rows={2}
-                style={{ flex:1, padding:"11px 14px", borderRadius:12, border:"1px solid rgba(224,160,80,0.4)", background:"rgba(255,255,255,0.9)", color:"#1a1410", fontSize:13, outline:"none", resize:"none", direction:"rtl", fontFamily:"inherit" }}
+                style={{ flex:1, padding:"11px 14px", borderRadius:12, border:"1px solid rgba(224,160,80,0.4)", background:T.bgCard, color:T.text, fontSize:13, outline:"none", resize:"none", direction:"rtl", fontFamily:"inherit" }}
               />
               <button onClick={askScenario} disabled={!scenario.trim() || scenarioLoading}
                 style={{ padding:"11px 16px", borderRadius:12, border:"none", background: scenario.trim() && !scenarioLoading ? COLORS.scenario : "rgba(255,255,255,0.1)", color: scenario.trim() && !scenarioLoading ? "#0f0c1a":"#5a5050", fontWeight:800, fontSize:18, cursor: scenario.trim() && !scenarioLoading ?"pointer":"default", flexShrink:0 }}>
@@ -816,7 +816,7 @@ function App() {
                 <div key={i} style={{ background:ans.correct?"rgba(100,200,100,0.07)":"rgba(200,80,80,0.07)", border:`1px solid ${ans.correct?"rgba(100,200,100,0.22)":"rgba(200,80,80,0.22)"}`, borderRadius:11, padding:"10px 13px", marginBottom:7 }}>
                   <div style={{ display:"flex", gap:7, alignItems:"flex-start", marginBottom:ans.correct?0:6 }}>
                     <span style={{ fontSize:13, marginTop:1 }}>{ans.correct?"✅":"❌"}</span>
-                    <div style={{ fontSize:13, fontWeight:600, lineHeight:1.5, color:"#2d2520" }}>{q.q}</div>
+                    <div style={{ fontSize:13, fontWeight:600, lineHeight:1.5, color:T.text }}>{q.q}</div>
                   </div>
                   {!ans.correct && <div style={{ fontSize:12, color:"#5b9bd5", paddingRight:20 }}>תשובה נכונה: <strong>{q.options[q.answer]}</strong> <span style={{ color:T.textMuted }}>({q.rule})</span></div>}
                 </div>
