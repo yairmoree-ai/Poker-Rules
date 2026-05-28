@@ -206,7 +206,7 @@ const practiceQuiz = [
   { q:"שחקן A אמר 'RAISE', B השווה לפני שסכום ידוע. מה קורה?", options:["B משלם את הסכום שאמר","ה-TD יפסוק לפי נסיבות","B חוזר","B חייב לקפל"], answer:1, exp:"כלל 59B: ה-TD יפסוק לפי נסיבות, כולל אפשרות לחייב B להשוות לכל סכום." },
 ];
 
-const certExam = [
+const certExamBank = [
   { q:"מה העקרון המרכזי של כלל 1?", options:["הדילר תמיד צודק","טובת המשחק והוגנות גוברות על כלל טכני","השחקן הוותיק מחליט","ה-TD אינו יכול לבטל כלל"], answer:1, rule:"כלל 1" },
   { q:"מה ההגדרה של Substantial Action (SA)?", options:["3 שחקנים השוו","כל 2 פעולות בתור (לפחות אחת מכניסה צ'יפים) או כל 3 פעולות","הפלופ נחשף","הבליינד שולם"], answer:1, rule:"כלל 36" },
   { q:"שחקן דוחף צ'יפ בודד גדול בשקט מול הימור – מה זה?", options:["RAISE","להשוות (CALL)","ALL-IN","FOLD"], answer:1, rule:"כלל 44" },
@@ -247,7 +247,139 @@ const certExam = [
   { q:"מה חוק ה-Re-buy לגבי החמצת ידיים?", options:["מותר להחמיץ יד אחת","אסור להחמיץ יד; מי שהכריז re-buy משחק chips behind","חייב לחכות לבליינד","ה-TD מחליט"], answer:1, rule:"כלל 27" },
   { q:"כמה חברים יש ב-TDA?", options:["מעל 1,000","מעל 3,000","מעל 5,000","מעל 10,000"], answer:2, rule:"כללי" },
   { q:"מה נדרש לעבור הסמכת TDA?", options:["70%","80%","90% (36/40)","100%"], answer:2, rule:"הסמכה" },
+
+  // ── כלל 1-5: עקרונות כלליים ──
+  { q:"TD פסק לטובת שחקן A. שחקן B טוען שהכלל הטכני מחייב אחרת. מי צודק?", options:["B – הכלל הטכני תמיד גובר","A – פסיקת ה-TD סופית גם אם שגויה טכנית","תלוי בכלל הספציפי","ניתן לערער לועדת ה-TDA"], answer:1, rule:"כלל 1" },
+  { q:"שחקן טוען 'לא ידעתי שיש כלל כזה'. מה הדין?", options:["פטור מעונש בפעם הראשונה","הכלל חל עליו בכל מקרה","ה-TD רשאי לוותר על עונש","הטענה מתקבלת רק אם הוא שחקן חדש"], answer:1, rule:"כלל 2" },
+  { q:"שחקן הניח ידו על הקלפים שלו ויריב ניסה לראות אותם. מה חובת השחקן?", options:["לקרוא ל-TD","להגן על ידו בעצמו","לדרוש החלפת דילר","לא חייב לעשות כלום"], answer:1, rule:"כלל 2" },
+  { q:"מינוח 'POT' כהכרזת הימור תקף רק ב:", options:["No-Limit","Pot-Limit בלבד","כל הפורמטים","Limit בלבד"], answer:1, rule:"כלל 3" },
+  { q:"שחקן הקיש על השולחן בתורו. מה המשמעות הרשמית?", options:["BET של המינימום","RAISE","CHECK","לא משמעותי"], answer:2, rule:"כלל 3" },
+  { q:"שחקן הסתיר את פניו עם קפוצ'ון ומשקפי שמש כהות. ה-TD רשאי:", options:["לפסול אותו מיד","לבקש הסרה של פריטים המסתירים זיהוי","לא לעשות כלום – זו זכות השחקן","להזהיר בלבד"], answer:1, rule:"כלל 4" },
+  { q:"שחקן עם יד חיה משתמש בטלפון. העונש לפי כלל 5:", options:["אזהרה בלבד","כפוף לעונש לפי כלל 71","פסילת היד","יציאה מהטורניר"], answer:1, rule:"כלל 5" },
+  // ── כלל 6-11: ניהול שולחן ──
+  { q:"כמה שחקנים מקסימום ב-Hold'em לפי TDA?", options:["8","9","10","תלוי במדיניות הבית"], answer:3, rule:"כלל 6" },
+  { q:"שחקן נרשם ב-Late Registration ומוקצה למושב בין SB לבאטון. מתי יכנס?", options:["מיד","יחכה לאחר שישלם BB","יחכה עד שהבאטון יעבור אותו","יחכה לדיל הבא"], answer:2, rule:"כלל 8" },
+  { q:"שחקן עם כניסה חוזרת (Re-entry) – הצ'יפים שהיו לו:", options:["מועברים לשולחן החדש","מוסרים מהמשחק לחלוטין","נשמרים לו לאחר הטורניר","מחולקים לשחקנים אחרים"], answer:1, rule:"כלל 8" },
+  { q:"שני שולחנות: אחד עם 7 שחקנים, אחד עם 9. מתי עוצרים לאיזון?", options:["הפרש של 2","הפרש של 3 ומעלה","הפרש של 4","לא עוצרים, רק בפיצול שולחן"], answer:1, rule:"כלל 11" },
+  { q:"שחקן מועבר לשולחן חדש. הפוזיציה הגרועה ביותר שאליה ישים אותו – מה היא לעולם לא תהיה?", options:["BB","UTG","BTN","SB"], answer:3, rule:"כלל 11" },
+  // ── כלל 12-20: קלפים ושואדאון ──
+  { q:"דילר קרא יד שגויה לטובת שחקן A. שחקן B ראה את הטעות לאחר שנלקחה הקופה. מה הדין?", options:["הקופה ל-B אוטומטית","ה-TD יחליט לפי הנסיבות","הקופה נשארת ל-A","נדרש שחקן נוסף שיאשר"], answer:1, rule:"כלל 12" },
+  { q:"שחקן ניצח בשואדאון אך קימץ ידו לפני שנלקחה הקופה. מה הדין?", options:["זוכה בכל מקרה","מפסיד את הקופה אם הקלפים לא ניתנים לאחזור 100%","ה-TD יחזיר הקלפים","זוכה אם שחקן אחר ראה"], answer:1, rule:"כלל 13" },
+  { q:"שחקן A מניח קלפים ומכריז 'פלאש'. שחקן B רואה שיש ל-A סטרייט טוב יותר. מי חייב להגיד?", options:["B חייב לשתוק – זה לא עניינו","B יכול לאמר, כל שחקן יכול לעזור בקריאת ידיים","רק הדילר חייב","רק ה-TD חייב"], answer:1, rule:"כלל 12" },
+  { q:"מה הסדר הנכון בשואדאון – מי מציג ראשון?", options:["הגדול ביותר","האגרסיב האחרון בסיבוב האחרון","הקרוב לבאטון","מי שרוצה"], answer:1, rule:"כלל 17" },
+  { q:"כל שחקנים קימצו פנים למטה. מה קורה?", options:["מיסדיל","השחקן האחרון שפעל מנצח ולא חייב להציג","הקופה מתחלקת","ה-TD מחליט"], answer:1, rule:"כלל 17" },
+  { q:"שחקן השווה ברפר, יריב הניח ידו. שחקן שהשווה רוצה לראות את היד שהונחה. האם מותר?", options:["כן תמיד","לא, הניח = ויתר","כן אם לא קימץ ידו והיה הימור ברפר","רק ב-TD's discretion"], answer:2, rule:"כלל 18" },
+  { q:"צ'יפ בודד נשאר לאחר פיצול קופה שווה ב-Hold'em. לאן הולך?", options:["לשחקן עם יד גבוהה יותר","למושב הראשון משמאל הבאטון","מתחלק שוב","נשאר לקופה הבאה"], answer:1, rule:"כלל 20" },
+  { q:"צ'יפ בודד נשאר אחרי פיצול קופה שווה ב-Stud. לאן הולך?", options:["למושב הראשון משמאל הבאטון","לשחקן עם היד הגבוהה ביותר","לשחקן הזוכה בקופה הנמוכה","מתחלק שוב"], answer:1, rule:"כלל 20" },
+  // ── כלל 21-29: ניהול צ'יפים ורמות ──
+  { q:"Chip Race מתבצע כש:", options:["שחקן מאבד כל צ'יפיו","הדנומינציה הנמוכה ביותר יוצאת מהמשחק","שולחן מתמזג","שחקן מבקש להחליף צ'יפים"], answer:1, rule:"כלל 24" },
+  { q:"ב-Chip Race, שחקן מקבל לכל היותר:", options:["צ'יפ אחד מהדנומינציה החדשה","2 צ'יפים","צ'יפים לפי ערך מדויק","כמות שרירותית"], answer:0, rule:"כלל 24" },
+  { q:"מה זה 'Chips Behind'?", options:["צ'יפים שנפלו מהשולחן","צ'יפים שאינם על השולחן של שחקן שהכריז Re-buy","צ'יפים שנשארו בערימה","סוג של side pot"], answer:1, rule:"כלל 27" },
+  { q:"שחקן שמכריז Re-buy – האם חייב לשחק ב-All-In עם הצ'יפים הנוכחיים?", options:["כן, הצ'יפים החדשים יגיעו לאחר ההאנד","לא, הצ'יפים החדשים ניתנים לפני ההאנד","תלוי בשלב","תלוי בהחלטת ה-TD"], answer:0, rule:"כלל 27" },
+  { q:"מה זה Rabbit Hunting ומה הכלל לגביו?", options:["מותר לכולם","חשיפת קלפים שהיו יוצאים לאחר שהיד נגמרה – מדיניות הבית קובעת","אסור תמיד לפי TDA","מותר רק ב-TD's request"], answer:1, rule:"כלל 28" },
+  { q:"שחקן ביקש Clock. כמה זמן ניתן לשחקן לפעול?", options:["30 שניות","60 שניות","25 שניות + 5 ספירה ואז היד נפסלת","20 שניות"], answer:2, rule:"כלל 29" },
+  { q:"מי רשאי לבקש Clock?", options:["רק שחקנים ביד","כל שחקן באירוע מהמושב","רק ה-TD","רק הדילר"], answer:1, rule:"כלל 29" },
+  // ── כלל 30-39: דיל וניהול ──
+  { q:"שחקן לא במושב כשמחולק הקלף האחרון בדיל. הדין:", options:["מקבל יד","ידו נפסלת","יכול לבחור","ה-TD מחליט"], answer:1, rule:"כלל 30" },
+  { q:"שחקן יצא מהשולחן עם יד חיה. מה קורה לידו?", options:["מתקפלת מיד","ממשיכה בשולחן עד שסוג הפעולה יגיע אליה","כפוף לעונש, ידו עדיין חיה בינתיים","ה-TD רשאי לפסול"], answer:2, rule:"כלל 31" },
+  { q:"מה זה Dead Button?", options:["באטון שנשאר במקום גם כשהשחקן יצא","שחקן שיצא נפסל","בליינד כפול","אין כזה מונח"], answer:0, rule:"כלל 32" },
+  { q:"טורניר משתמש ב-Dead Button. שחקן יצא בפוזיציית SB. מה קורה לבאטון?", options:["נשאר על המושב הריק","עובר לשחקן הבא","BB הופך לבאטון","SB נשלם כפול"], answer:0, rule:"כלל 32" },
+  { q:"מה ה-Burn Card ולמה משתמשים בו?", options:["קלף שנפסל בגלל סימון","הקלף הראשון שהדילר מניח פנים למטה לפני חשיפת כל רחוב – להגן מפני מידע שדלף","קלף שנשרף אחרי מיסדיל","קלף רזרבי"], answer:1, rule:"כלל 33" },
+  { q:"שחקן ראה את ה-Burn Card. מה הדין?", options:["מיסדיל אוטומטי","ידו נפסלת","ה-TD יחליט; המשחק עשוי להמשיך","עונש של 2 ידיים"], answer:2, rule:"כלל 33" },
+  { q:"מה מגדיר Misdeal?", options:["כל טעות בדיל","רשימה ספציפית של מצבים כגון: 2+ קלפים גלויים, קלף לשחקן הלא נכון, דיל לפני SB","כל קלף גלוי","דיל שהוא לא אוהב"], answer:1, rule:"כלל 35" },
+  { q:"מתי לא ניתן להכריז Misdeal גם אם הייתה טעות?", options:["לאחר שהדילר הכריז 'deal'","לאחר Substantial Action (SA)","לאחר שהבאטון הונח","לאחר שה-BB שולם"], answer:1, rule:"כלל 35" },
+  { q:"מה נחשב Substantial Action (SA)?", options:["2 שחקנים קימצו","כל 2 פעולות (לפחות אחת מכניסה צ'יפים) או כל 3 פעולות","פוסט-פלופ בלבד","כשהקופה עברת 1,000"], answer:1, rule:"כלל 36" },
+  { q:"הפלופ נחשף עם 4 קלפים (לא 3). מה הדין?", options:["מיסדיל","הדילר מחזיר קלף אחד אקראי לחפיסה, מערבב, ומוציא Burn + Turn רגיל","ה-TD בוחר איזה קלף לבטל","הדילר בוחר את הקלף הכי גבוה להסיר"], answer:1, rule:"כלל 39" },
+  { q:"ה-Turn נחשף לפני שכל ההימורים הסתיימו בפלופ. מה הדין?", options:["מיסדיל","קלף ה-Turn מוחזר לחפיסה, ממשיכים הימורי פלופ, ואז Turn מחדש עם Burn","נפסל ומיסדיל","הקלף נשאר"], answer:1, rule:"כלל 39" },
+  // ── כלל 40-50: הימורים ──
+  { q:"שחקן אמר 'אני מהמר מאה' אך דחף 500. מה ההימור?", options:["500 – הצ'יפים קובעים","100 – הכרזה מילולית קובעת","ה-TD יחליט","ממוצע: 300"], answer:1, rule:"כלל 40" },
+  { q:"שחקן דחף צ'יפים וגם הכריז בו-זמנית. מה קובע?", options:["הצ'יפים תמיד","ההכרזה תמיד","אם ברורים שניהם – ההכרזה גוברת; אם לא – הצ'יפים","ה-TD מחליט"], answer:2, rule:"כלל 40" },
+  { q:"שחקן הכריז 'RAISE' ואז דחף צ'יפים בשתי תנועות ללא הכרזת סכום. מה הדין?", options:["String Bet – חוזר להשוואה","תקין – ההכרזה המילולית מספיקה","RAISE מינימלי בלבד","ה-TD יחליט"], answer:1, rule:"כלל 42" },
+  { q:"מה נחשב String Bet?", options:["הימור גבוה מהקופה","הימור בשתי תנועות ללא הכרזה מילולית מראש","הימור בסכום לא עגול","הימור ב-All-In"], answer:1, rule:"כלל 42" },
+  { q:"RAISE מינימלי פרה-פלופ: BB=1,000, A פותח ל-2,500. RAISE מינימלי של B?", options:["3,500","4,000","5,000","3,000"], answer:1, rule:"כלל 43" },
+  { q:"פוסט-פלופ: A מהמר 3,000. B רוצה All-In עם 4,200. האם זה RAISE מלא?", options:["כן – כל סכום מעל ה-bet נחשב raise","לא – All-In של 4,200 הוא רק 40% מ-raise מלא (6,000)","כן – 4,200 מעל 50%","ה-TD יחליט"], answer:1, rule:"כלל 43" },
+  { q:"B עושה All-In ב-4,200 מול bet של 3,000. C כבר השווה ל-3,000. האם C יכול לעשות Re-raise?", options:["כן תמיד","לא – All-In של B לא היה raise מלא","כן אם ה-TD מאשר","רק אם C הכריז כוונה"], answer:1, rule:"כלל 43" },
+  { q:"שחקן A מעלה 50%-99% מה-bet הקודם בלי להכריז raise. מה חייב לעשות?", options:["מותר – נחשב CALL","חייב להשלים ל-RAISE מלא","ה-TD יבחר","חייב לקפל"], answer:1, rule:"כלל 43" },
+  { q:"שחקן דחף צ'יפ של 1,000 בשקט מול bet של 600. מה זה?", options:["RAISE ל-1,000","להשוות (600)","ALL-IN","BET של 1,000"], answer:1, rule:"כלל 44" },
+  { q:"שחקן הכריז RAISE ללא סכום ואז דחף צ'יפ של 5,000. הימור מקורי 800. מה ה-RAISE?", options:["5,000","המקסימום האפשרי לצ'יפ זה","800","1,600"], answer:1, rule:"כלל 44" },
+  { q:"B דחף בשקט 2 צ'יפים של 1,000 מול bet של 600. מה הפסיקה?", options:["RAISE ל-2,000","להשוות (600) – צ'יפים מרובים בשקט = call","RAISE ל-1,200","ALL-IN"], answer:1, rule:"כלל 45" },
+  { q:"כמה Raises מותרים ב-Limit Hold'em פרה-פלופ עם 3 שחקנים?", options:["3","4 (cap)","אין מגבלה כשנשארו 2","תלוי בבית"], answer:2, rule:"כלל 48" },
+  { q:"מה ה-BB Ante?", options:["אנטה שרק ה-BB משלם עבור כל השולחן","אנטה כפולה","אנטה שכל שחקן משלם","ביטול האנטה הרגילה"], answer:0, rule:"כלל 49" },
+  // ── כלל 51-60: פרוצדורות ──
+  { q:"שחקן A פועל מחוץ לתור (OOT) וקיפל. B אחריו בודק. C בתורו – האם FOLD של A מחייב?", options:["כן תמיד","לא – כשA פעל, הפעולה הייתה CHECK, לכן FOLD אינו מחייב","כן אם C מתנגד","ה-TD מחליט"], answer:1, rule:"כלל 53" },
+  { q:"RAISE מחוץ לתור – מה הדין?", options:["תקין","כפוף לעונש; אם הפעולה הנוכחית תואמת – מחייב, אם לא – ניתן לשנות","מבוטל תמיד","ה-TD יבחר"], answer:1, rule:"כלל 53" },
+  { q:"שחקן A הכריז FOLD מחוץ לתור. B לפניו בודק. מה קורה?", options:["FOLD של A מחייב","A חוזר ויכול לפעול רגיל כי הפעולה השתנתה","עונש ל-A אך FOLD עדיין מחייב","מיסדיל"], answer:1, rule:"כלל 53" },
+  { q:"מה ההגדרה של Exposed Card?", options:["קלף שנפל על הרצפה","קלף שנראה על ידי שחקן אחר שלא בתורו","קלף שנחשף בשואדאון","קלף של הדילר"], answer:1, rule:"כלל 54" },
+  { q:"שחקן הכריז 'Call' כשאין הימור. מה קורה?", options:["CHECK","BET מינימלי","FOLD","אין משמעות"], answer:0, rule:"כלל 55" },
+  { q:"שחקן הכריז 'Raise' כשאין הימור. מה חייב לעשות?", options:["CHECK","BET מינימלי","RAISE מינימלי","FOLD"], answer:1, rule:"כלל 55" },
+  { q:"שחקן אמר 'אני מהמר חמישה' כשהקופה 300. מה ההימור?", options:["5","500","5,000","תלוי בהקשר"], answer:1, rule:"כלל 57" },
+  { q:"שחקן אמר 'אני מהמר חמישה' כשהקופה 50,000. מה ההימור?", options:["5","500","5,000","תלוי בהקשר"], answer:2, rule:"כלל 57" },
+  { q:"'אם תהמר אעלה' – הכרזה מותנית (Conditional Statement). מה הדין?", options:["מחייב תמיד","לא סטנדרטי, עלול להיות מחייב ו/או לגרור עונש","מותר לחלוטין","בטל לחלוטין"], answer:1, rule:"כלל 59" },
+  { q:"שחקן A הכריז RAISE אך לא אמר סכום. B השווה לפני שA הוסיף צ'יפים. מה הדין?", options:["B חזר אוטומטית","ה-TD יפסוק בהתאם לנסיבות ולרוח הכלל","B חייב לשלם כל סכום שA יגיד","B קיפל"], answer:1, rule:"כלל 59" },
+  { q:"שחקן רוצה לדעת כמה צ'יפים ליריב. מתי מותר לדרוש ספירה מדויקת?", options:["בכל עת","רק כשמול All-In ובתורו לפעול","רק פרה-פלופ","ה-TD בלבד יכול לספור"], answer:1, rule:"כלל 60" },
+  // ── כלל 61-71: אתיקה ועונשים ──
+  { q:"שחקן דיבר על ידו החיה לשחקן שכבר קיפל. מה הדין?", options:["מותר","כפוף לעונש לפי כלל 71","מיסדיל","עונש אוטומטי של 10 ידיים"], answer:1, rule:"כלל 67" },
+  { q:"שחקן הסכים עם יריב לחלוק קופה לפני שהשואדאון הסתיים. מה הדין?", options:["מותר בהסכמה","Soft Play – כפוף לעונש חמור","מותר אם ה-TD מאשר","בסדר גמור"], answer:1, rule:"כלל 68" },
+  { q:"מה ההגדרה של Collusion?", options:["שיחה בין שחקנים","שיתוף פעולה לא חוקי בין שחקנים לרעת אחרים","שימוש בטלפון","שחקן שעוזר לדילר"], answer:1, rule:"כלל 70" },
+  { q:"מה Angle Shooting?", options:["ירי מדויק","ניסיון להשיג יתרון לא הוגן בצורה 'טכנית' שאינה מפרה כלל מפורש","אסטרטגיה לגיטימית","סוג של bluff"], answer:1, rule:"כלל 71" },
+  { q:"מה סדר העונשים לפי TDA?", options:["אזהרה, עונש ידיים, פסילה","ורבלי, עונש זמן/ידיים, אזהרה, פסילה","אזהרה, ורבלי, עונש, פסילה","ורבלי, אזהרה, עונש ידיים, פסילה"], answer:1, rule:"כלל 71" },
+  { q:"שחקן על עונש ידיים – קלפים מחולקים לו ואז:", options:["משחק רגיל","נפסלים מיד","יכול להגן עליהם בלבד","יכול לקפל בלבד"], answer:1, rule:"כלל 71" },
+  { q:"שחקן זרק קלפים בכעס ופגע בשחקן אחר. הדין:", options:["אזהרה בלבד","עונש חמור עד פסילה מהטורניר","קנס כספי","אין כלל ספציפי"], answer:1, rule:"כלל 71" },
+  { q:"מה קורה לצ'יפים אבודים שלא ניתן לייחס לשחקן?", options:["מחולקים שווה","מוסרים למלאי הטורניר","הולכים לפרס הראשון","ה-TD שומר"], answer:1, rule:"כלל 64" },
+  // ── מצבים מורכבים ──
+  { q:"A אול-אין ב-5,000. B מעלה ל-15,000. C כבר השווה ל-5,000. האם C יכול לעשות Re-raise?", options:["לא – כבר השווה","כן – RAISE של B פתח מחדש את ההימור","רק אם C הכריז כוונה","ה-TD מחליט"], answer:1, rule:"כלל 43" },
+  { q:"ה-River נחשף בטעות לפני שהימורי Turn הסתיימו. מה הדין?", options:["מיסדיל","קלף ה-River מוחזר, ממשיכים הימורי Turn, ואז River מחדש עם Burn","River נשאר","ה-TD יבחר קלף אחר"], answer:1, rule:"כלל 39" },
+  { q:"שחקן יצא לשירותים. תורו לפעול. מה קורה?", options:["ידו נפסלת","ממתינים לו","הדילר מפעיל Clock אוטומטית","הדיל ממשיך, ידו חיה, עלולה לקבל עונש"], answer:3, rule:"כלל 31" },
+  { q:"2 שחקנים נותרו. שניהם All-In. עוד 3 רחובות לחשוף. מה קורה?", options:["מניחים ידיים, חושפים את כל הקהילה","כל רחוב עם הימורים כרגיל (0)","ממתינים להחלטת TD","מיסדיל"], answer:0, rule:"כלל 16" },
+  { q:"שחקן A השווה ברחוב האחרון. B הניח ידו מיד. A רוצה לקמץ. האם מותר?", options:["כן – A השווה, לא הימר","לא – A השווה לפעולה אגרסיבית, לכן חייב להניח","כן אם B כבר הניח","תלוי ב-TD"], answer:1, rule:"כלל 17" },
+  { q:"מה ההבדל בין 'Exposed Card' ל-'Boxed Card'?", options:["אין הבדל","Exposed = נחשף בטעות; Boxed = קלף עם פנים למעלה בחפיסה","Boxed = נחשף בטעות; Exposed = פנים למעלה","שניהם גורמים למיסדיל"], answer:1, rule:"כלל 54" },
+  { q:"Boxed Card (פנים למעלה בחפיסה) – מה הדין?", options:["מיסדיל אוטומטי","הקלף מוצא ומשחק ממשיך; אם גורם לשחקן לקבל פחות מ-2 קלפים = מיסדיל","שחקן שקיבל אותו מפסיד","TD מחליט"], answer:1, rule:"כלל 37" },
+  { q:"שחקן A קיפל לאחר ש-B הכריז All-In. לאחר מכן התברר ש-B לא היה All-In אמיתי. מה הדין?", options:["A יכול לחזור לשחק","A ויתר על ידו – FOLD סופי","מיסדיל","ה-TD יחליט לפי נסיבות"], answer:1, rule:"כלל 2" },
+  { q:"מה זה 'Soft Play' ומדוע אסור?", options:["משחק עדין – מותר","הימור קטן מהרגיל נגד חבר/שחקן מסוים – פוגע ביושרת המשחק","סוג של slow play – מותר","אסטרטגיה של beginners"], answer:1, rule:"כלל 68" },
+  // ── שאלות על מבנה הטורניר ──
+  { q:"מה הסדר הנכון של עדיפות: הכרזה מילולית מול צ'יפים כשמגיעים יחד?", options:["צ'יפים תמיד גוברים","הכרזה מילולית ברורה גוברת","ה-TD מחליט","הצ'יפים אם בתנועה אחת"], answer:1, rule:"כלל 40" },
+  { q:"שני שחקנים עשו All-In בו-זמנית. אחד עם 10,000 ואחד עם 8,000. מה גודל הקופה הראשית?", options:["18,000","16,000 + Side pot של 2,000","20,000","16,000"], answer:1, rule:"כלל 43" },
+  { q:"מה המשמעות של 'Table Stakes'?", options:["ניתן לקנות צ'יפים בכל עת","שחקן יכול להמר רק את הצ'יפים שיש לו על השולחן","הימור מינימלי","גודל הקופה"], answer:1, rule:"כלל 60" },
+  { q:"כמה זמן ניתן למבחן ההסמכה האמיתי של TDA?", options:["60 דקות","90 דקות","100 דקות","120 דקות"], answer:2, rule:"הסמכה" },
+  { q:"מכמה שאלות מורכב מאגר השאלות של מבחן ה-TDA?", options:["100","200","300","400"], answer:2, rule:"הסמכה" },
+  { q:"כמה הזדמנויות יש לנבחן לעבור את מבחן ה-TDA בכל רישום?", options:["1","2","3","אין מגבלה"], answer:1, rule:"הסמכה" },
+  { q:"TDA Summit XII מתי ואיפה?", options:["יוני 2025, לאס וגאס","יוני 2026, PokerGO Studio, לאס וגאס","ספטמבר 2026, WSOP","מאי 2026, מלבורן"], answer:1, rule:"כללי" },
+  { q:"מה המטרה המרכזית של ה-TDA?", options:["לייצר רווח מטורנירים","לאחד חוקי טורניר פוקר ברחבי העולם","לפקח על קזינואים","לאמן דילרים"], answer:1, rule:"כללי" },
+  // ── Edge Cases ──
+  { q:"A מהמר, B מעלה, C מעלה מחדש, A עושה All-In קטן (לא raise מלא). האם B וC יכולים לעשות Re-raise?", options:["כן שניהם","לא – All-In קטן לא פתח מחדש","כן B, לא C","רק C שהרים אחרון"], answer:1, rule:"כלל 43" },
+  { q:"פלופ נחשף עם 2 קלפים בלבד (לא 3). מה הדין?", options:["מיסדיל","הדילר מוסיף קלף שלישי ממקום שבו הייתה אמורה להיות","ממשיכים עם 2 קלפים","ה-TD בוחר"], answer:1, rule:"כלל 39" },
+  { q:"שחקן A חשף בטעות קלף אחד מידו. מה הדין?", options:["ידו נפסלת","הקלף נחשב Exposed ומוכרז; המשחק ממשיך","מיסדיל","A חייב לחשוף את שני הקלפים"], answer:1, rule:"כלל 54" },
+  { q:"שחקן לא שם לב שקיבל 3 קלפים בטעות. גילה אחרי SA. מה הדין?", options:["מיסדיל","ידו נפסלת – SA כבר התרחש","ה-TD יסיר קלף אחד","ממשיכים"], answer:1, rule:"כלל 35" },
+  { q:"שחקן רצה להגיד CHECK אך אמר בטעות CALL. אין הימור. מה הדין?", options:["נחשב CHECK","נחשב BET","נחשב FOLD","CALL – המינוח מחייב"], answer:0, rule:"כלל 55" },
+  { q:"מה קורה כשה-Burn Card נחשף בטעות לפני הפלופ?", options:["מיסדיל","הקלף מוחזר, מערבבים מחדש, ואז Burn + פלופ רגיל","הקלף הגלוי הופך ל-community card","ה-TD מחליט"], answer:1, rule:"כלל 33" },
+  { q:"שחקן A All-In. B ו-C ממשיכים לשחק. B עושה All-In ב-Turn. C מקפל. מה קורה לקופות?", options:["A לוקח הכל","יש קופה ראשית (A,B,C) וקופת צד (B,C). C קיפל – B לוקח Side pot; Main pot בשואדאון בין A ל-B","מיסדיל","ה-TD מחלק"], answer:1, rule:"כלל 43" },
+  { q:"שחקן הכריז 'All-In' אך יש לו פחות מ-big blind. האם זה מחייב?", options:["לא – מינימום הימור הוא BB","כן – All-In תמיד תקף בכל סכום","ה-TD מחליט","רק אם יריב מסכים"], answer:1, rule:"כלל 43" },
+  { q:"מה ההגדרה של 'Fouled Deck'?", options:["חפיסה שנרטבה","חפיסה עם מספר שגוי של קלפים או קלפים כפולים","חפיסה ישנה","חפיסה לא מותג TDA"], answer:1, rule:"כלל 35" },
 ];
+
+// Shuffle helper
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+// Pick 40 random questions and shuffle their answers
+function buildExam() {
+  const picked = shuffle(certExamBank).slice(0, 40);
+  return picked.map(q => {
+    const indexed = q.options.map((opt, i) => ({ opt, correct: i === q.answer }));
+    const shuffled = shuffle(indexed);
+    return {
+      ...q,
+      options: shuffled.map(x => x.opt),
+      answer: shuffled.findIndex(x => x.correct),
+    };
+  });
+}
 
 const COLORS = { home:"#c8a96e", learn:"#7eb8a4", addendum:"#5b9bd5", practice:"#8b7cb8", exam:"#e07b6a", search:"#5fc4b8", scenario:"#e0a050" };
 
@@ -304,7 +436,13 @@ function App() {
   const [ceReview, setCeReview] = useState(false);
 
   const resetPQ = () => { setPqIdx(0); setPqSel(null); setPqScore(0); setPqDone(false); };
-  const resetCE = () => { setCeIdx(0); setCeSel(null); setCeAnswers([]); setCeDone(false); setCeReview(false); };
+  const [certExam, setCertExam] = useState(() => buildExam());
+  const [examName, setExamName] = useState("");
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [examResults, setExamResults] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("tdaResults") || "[]"); } catch(e){ return []; }
+  });
+  const resetCE = () => { setCertExam(buildExam()); setCeIdx(0); setCeSel(null); setCeAnswers([]); setCeDone(false); setCeReview(false); };
   const goMode = (m) => { setMode(m); setActiveChapter(null); setActiveRule(null); setActiveAddendum(null); };
 
   const handlePQAnswer = (i) => {
@@ -317,10 +455,100 @@ function App() {
   const nextCE = () => {
     const updated = [...ceAnswers, { sel:ceSel, correct: ceSel===certExam[ceIdx].answer }];
     setCeAnswers(updated);
-    if (ceIdx+1 < certExam.length) { setCeIdx(c=>c+1); setCeSel(null); } else setCeDone(true);
+    if (ceIdx+1 < certExam.length) { setCeIdx(c=>c+1); setCeSel(null); } else { setCeDone(true); setShowNameInput(true); }
   };
 
   const ceScore = ceAnswers.filter(a=>a.correct).length;
+
+  const saveResult = (name) => {
+    const result = {
+      name: name || "אנונימי",
+      score: ceAnswers.filter(a=>a.correct).length,
+      total: 40,
+      pct: Math.round((ceAnswers.filter(a=>a.correct).length/40)*100),
+      passed: Math.round((ceAnswers.filter(a=>a.correct).length/40)*100) >= 90,
+      date: new Date().toLocaleDateString("he-IL"),
+    };
+    const updated = [result, ...examResults].slice(0, 20);
+    setExamResults(updated);
+    try { localStorage.setItem("tdaResults", JSON.stringify(updated)); } catch(e){}
+    return result;
+  };
+
+  const shareResult = (result) => {
+    // Generate canvas image
+    const canvas = document.createElement("canvas");
+    canvas.width = 600; canvas.height = 340;
+    const ctx = canvas.getContext("2d");
+    // Background
+    const grad = ctx.createLinearGradient(0,0,600,340);
+    grad.addColorStop(0, "#0f0c1a");
+    grad.addColorStop(1, "#1a1230");
+    ctx.fillStyle = grad;
+    ctx.roundRect(0,0,600,340,20);
+    ctx.fill();
+    // Gold border
+    ctx.strokeStyle = "#c8a96e";
+    ctx.lineWidth = 2;
+    ctx.roundRect(8,8,584,324,16);
+    ctx.stroke();
+    // Header line
+    ctx.fillStyle = "#c8a96e";
+    ctx.fillRect(30, 65, 540, 1);
+    // TDA title
+    ctx.fillStyle = "#c8a96e";
+    ctx.font = "bold 13px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("POKER TDA • 2024", 300, 42);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 22px Arial";
+    ctx.fillText("🃏 חוקי טורניר פוקר", 300, 58);
+    // Name
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 28px Arial";
+    ctx.fillText(result.name, 300, 110);
+    // Score big
+    ctx.fillStyle = result.passed ? "#c8a96e" : "#e07b6a";
+    ctx.font = "bold 64px Arial";
+    ctx.fillText(result.pct + "%", 300, 195);
+    // Score details
+    ctx.fillStyle = result.passed ? "#8de8a0" : "#e88080";
+    ctx.font = "bold 20px Arial";
+    ctx.fillText(result.passed ? "✓ עברת! מוסמך TDA" : "✗ לא עברת – נדרש 90%", 300, 235);
+    // Score fraction
+    ctx.fillStyle = "#9ca3af";
+    ctx.font = "16px Arial";
+    ctx.fillText(result.score + "/40 שאלות נכונות", 300, 265);
+    // Date
+    ctx.fillStyle = "#6b7280";
+    ctx.font = "14px Arial";
+    ctx.fillText(result.date, 300, 300);
+    // Bottom line
+    ctx.strokeStyle = "rgba(200,169,110,0.3)";
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(30,315); ctx.lineTo(570,315); ctx.stroke();
+    ctx.fillStyle = "#c8a96e";
+    ctx.font = "11px Arial";
+    ctx.fillText("pokertda.com", 300, 330);
+
+    // Download image
+    const link = document.createElement("a");
+    link.download = "TDA_" + result.name + "_" + result.pct + ".png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+
+    // Open WhatsApp
+    const emoji = result.passed ? "🏆" : "📚";
+    const msg = emoji + " תוצאת מבחן הסמכה TDA\n\n"
+      + "👤 " + result.name + "\n"
+      + "📊 ציון: " + result.pct + "% (" + result.score + "/40)\n"
+      + (result.passed ? "✅ עברת! מוסמך TDA 2024" : "❌ לא עברת – נדרש 90%") + "\n"
+      + "📅 " + result.date + "\n\n"
+      + "🃏 pokertda.com";
+    setTimeout(() => {
+      window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+    }, 500);
+  };
   const cePct = ceDone ? Math.round((ceScore/certExam.length)*100) : 0;
   const passed = cePct >= 90;
 
@@ -784,25 +1012,69 @@ function App() {
             )}
           </div>
         )}
-        {mode==="exam" && ceDone && !ceReview && (
+        {mode==="exam" && ceDone && !ceReview && (() => {
+          const savedResult = examResults[0] && examResults[0].score === ceScore ? examResults[0] : null;
+          return (
           <div style={{ textAlign:"center" }}>
             <div style={{ fontSize:50, marginBottom:11 }}>{passed?"🏆":"📚"}</div>
             <div style={{ fontSize:24, fontWeight:900, color:passed?"#c8a96e":"#e07b6a", marginBottom:5 }}>{ceScore}/40 • {cePct}%</div>
             <div style={{ fontSize:15, color:passed?"#8de8a0":"#e89090", fontWeight:700, marginBottom:5 }}>{passed?"✅ עברת! מוסמך TDA":"❌ לא עברת – נדרש 90%"}</div>
-            <div style={{ fontSize:13, color:T.text2, marginBottom:20 }}>{passed?"ניתן להגיש ב-pokertda.com":"חזור על הנושאים שטעית ונסה שוב."}</div>
+            <div style={{ fontSize:13, color:T.text2, marginBottom:16 }}>{passed?"ניתן להגיש ב-pokertda.com":"חזור על הנושאים שטעית ונסה שוב."}</div>
+
+            {showNameInput && (
+              <div style={{ background:T.bgCard, border:`1px solid rgba(200,169,110,0.3)`, borderRadius:13, padding:"14px", marginBottom:14, textAlign:"right" }}>
+                <div style={{ fontSize:13, fontWeight:700, color:"#c8a96e", marginBottom:8 }}>💾 שמור תוצאה</div>
+                <div style={{ display:"flex", gap:8 }}>
+                  <input
+                    type="text" placeholder="שם הנבחן..." value={examName}
+                    onChange={e => setExamName(e.target.value)}
+                    onKeyDown={e => { if(e.key==="Enter" && examName.trim()){ const r=saveResult(examName); setShowNameInput(false); shareResult(r); }}}
+                    style={{ flex:1, padding:"9px 12px", borderRadius:9, border:`1px solid rgba(200,169,110,0.4)`, background:T.bg, color:T.text, fontSize:14, outline:"none", textAlign:"right", fontFamily:"inherit" }}
+                    autoFocus
+                  />
+                  <button onClick={() => { if(examName.trim()){ const r=saveResult(examName); setShowNameInput(false); shareResult(r); }}}
+                    style={{ padding:"9px 14px", borderRadius:9, border:"none", background:"#c8a96e", color:"#0f0c1a", fontWeight:800, fontSize:13, cursor:"pointer" }}>
+                    שתף 📤
+                  </button>
+                </div>
+                <div style={{ fontSize:11, color:T.textMuted, marginTop:6 }}>התמונה תורד + תפתח וואטסאפ</div>
+              </div>
+            )}
+
+            {!showNameInput && examResults.length > 0 && (
+              <button onClick={() => shareResult(examResults[0])}
+                style={{ width:"100%", padding:"11px", borderRadius:11, border:"none", background:"#25D366", color:"#fff", fontWeight:800, fontSize:14, cursor:"pointer", marginBottom:10, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                📤 שתף בוואטסאפ
+              </button>
+            )}
+
             <div style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:13, padding:"13px", marginBottom:15, textAlign:"right" }}>
               <div style={{ fontSize:13, fontWeight:700, color:"#c8a96e", marginBottom:9 }}>ניתוח תוצאות</div>
               <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}><span style={{ fontSize:13, color:"#8de8a0" }}>✅ נכונות</span><span style={{ fontSize:13, fontWeight:700, color:"#8de8a0" }}>{ceScore}</span></div>
               <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}><span style={{ fontSize:13, color:"#e88080" }}>❌ שגויות</span><span style={{ fontSize:13, fontWeight:700, color:"#e88080" }}>{40-ceScore}</span></div>
               <div style={{ display:"flex", justifyContent:"space-between" }}><span style={{ fontSize:13, color:"#c8a96e" }}>📊 ציון</span><span style={{ fontSize:13, fontWeight:700, color:passed?"#8de8a0":"#e88080" }}>{cePct}% {passed?"✅":"❌"}</span></div>
             </div>
+
+            {examResults.length > 1 && (
+              <div style={{ background:"rgba(255,255,255,0.03)", border:`1px solid ${T.border}`, borderRadius:13, padding:"13px", marginBottom:15, textAlign:"right" }}>
+                <div style={{ fontSize:13, fontWeight:700, color:"#c8a96e", marginBottom:9 }}>📋 היסטוריה</div>
+                {examResults.slice(0,5).map((r,i) => (
+                  <div key={i} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"5px 0", borderBottom: i<Math.min(examResults.length,5)-1 ? `1px solid ${T.border}` : "none" }}>
+                    <span style={{ fontSize:12, color:T.text2 }}>{r.name} • {r.date}</span>
+                    <span style={{ fontSize:12, fontWeight:700, color: r.passed?"#8de8a0":"#e88080" }}>{r.pct}% {r.passed?"✅":"❌"}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div style={{ display:"grid", gap:8 }}>
               <button onClick={() => setCeReview(true)} style={{ padding:"12px", borderRadius:11, border:"1px solid rgba(91,155,213,0.5)", background:"rgba(91,155,213,0.1)", color:"#5b9bd5", fontWeight:700, fontSize:13, cursor:"pointer" }}>🔍 בדוק תשובות</button>
               <button onClick={resetCE} style={{ padding:"12px", borderRadius:11, border:"none", background:"#e07b6a", color:"#fff", fontWeight:800, fontSize:14, cursor:"pointer" }}>🔄 נסה שוב</button>
               <button onClick={() => goMode("learn")} style={{ padding:"12px", borderRadius:11, border:"1px solid rgba(200,169,110,0.4)", background:"transparent", color:"#c8a96e", fontWeight:700, fontSize:13, cursor:"pointer" }}>📖 חזור ללימוד</button>
             </div>
           </div>
-        )}
+          );
+        })()}
         {mode==="exam" && ceDone && ceReview && (
           <div>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:13 }}>
